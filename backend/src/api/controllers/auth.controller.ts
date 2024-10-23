@@ -22,7 +22,7 @@ class AuthController {
 				process.env.JWT_SECRET || "secret",
 				{ expiresIn: "1d" }
 			);
-			return res.status(200).json({ token });
+			return res.status(200).json({ user, accessToken: token });
 		});
 	}
 
@@ -38,7 +38,7 @@ class AuthController {
 				password: hash,
 			})
 				.then(() => {
-					return res.status(201).json({ message: "User created" });
+					return res.status(200).json({ message: "User created" });
 				})
 				.catch((err) => {
 					next(err);

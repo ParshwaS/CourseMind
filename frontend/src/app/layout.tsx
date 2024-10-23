@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import ServiceWorker from '@/components/service/service'
+import { AuthProvider } from '@/components/context/auth.context'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ServiceWorker />
-      <body className={inter.className}>{children}</body>
+      <AuthProvider>
+        <body className={inter.className}>{children}</body>
+      </AuthProvider>
     </html>
   )
 }

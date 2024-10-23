@@ -114,7 +114,7 @@ export default function ChapterContent({ params }: { params: { id: string, chapt
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Course {params.id} - Chapter {params.chapterId}</h1>
+      <h1 className="text-3xl font-bold mb-6">Course {params.id}</h1>
       {sessions.map((session, sessionIndex) => (
         <Card key={session.title} className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">

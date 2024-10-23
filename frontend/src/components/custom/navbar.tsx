@@ -1,24 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, ChevronDown, Menu, Search } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { useAuth } from "../context/auth.context"
 
 export default function TopNavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const logout = useAuth().logout
 
   const navItems = [
     { name: "Dashboard", href: "#dashboard" },
@@ -35,7 +30,7 @@ export default function TopNavBar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">EduERP</span>
+              <span className="text-2xl font-bold text-primary">CourseMind</span>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
@@ -53,37 +48,9 @@ export default function TopNavBar() {
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-accent text-gray-300 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-white focus:ring-white focus:text-gray-900 sm:text-sm"
-                />
-              </div>
-              <Button variant="ghost" size="icon" className="ml-3">
-                <Bell className="h-6 w-6" aria-hidden="true" />
+              <Button variant="ghost" onClick={logout}>
+                Logout
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="ml-3 flex items-center">
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="User profile"
-                    />
-                    <ChevronDown className="ml-2 h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Your Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Sign out</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
           <div className="md:hidden">

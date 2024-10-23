@@ -6,17 +6,28 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/components/context/auth.context";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function LoginScreen() {
   const router = useRouter()
+  const login = useAuth().login
+  const toast = useToast()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement login logic
-    console.log("Login attempted with:", { email, password })
+    const x = await login(email, password);
+
+    if (!x) {
+      // toast.toast({
+      //   title: "Login Failed",
+      //   description: "Please check your email and password and try again.",
+      // });
+      alert("Login Failed");
+    }
   }
 
   return (
@@ -30,23 +41,23 @@ export default function LoginScreen() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required 
+                required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
+              <Input
+                id="password"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required 
+                required
               />
             </div>
             <Button type="submit" className="w-full">Login</Button>

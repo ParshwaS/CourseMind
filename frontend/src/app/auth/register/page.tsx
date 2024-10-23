@@ -6,13 +6,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/components/context/auth.context";
 
 export default function LoginScreen() {
     const router = useRouter()
+    const register = useAuth().register
 
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
         password: "",
     })
@@ -25,10 +26,14 @@ export default function LoginScreen() {
         }))
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // Here you would typically send the data to your backend
-        console.log("Form submitted:", formData);
+        const x = await register(formData.name, formData.email, formData.password);
+
+        if (!x) {
+            alert("Registration Failed");
+        }
     }
 
 
@@ -41,25 +46,14 @@ export default function LoginScreen() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="firstName">First name</Label>
+                                <Label htmlFor="name">Name</Label>
                                 <Input
-                                    id="firstName"
-                                    name="firstName"
-                                    placeholder="John"
-                                    value={formData.firstName}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName">Last name</Label>
-                                <Input
-                                    id="lastName"
-                                    name="lastName"
-                                    placeholder="Doe"
-                                    value={formData.lastName}
+                                    id="name"
+                                    name="name"
+                                    placeholder="John Doe"
+                                    value={formData.name}
                                     onChange={handleInputChange}
                                     required
                                 />
