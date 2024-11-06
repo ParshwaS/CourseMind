@@ -1,0 +1,16 @@
+MCQ,Choices,Correct
+What is UML used for in software development?,a: It's a programming language that helps write code efficiently. | b: It's used to create diagrams and models of system architecture. | c: It's an interface for communication between programmers and end-users. | d: It's a tool for testing software applications.,b
+When was UML created?,a: 1985 | b: 1990 | c: 1995 | d: 2000,c
+What does UML stand for?,a: User Model Language | b: Unified Modeling Language | c: Universal Methodology Library | d: Utopian Modeling Language,b
+What are content areas in UML diagrams used for?,a: To organize elements and groups them under a common name. | b: To define the programming logic within the diagram. | c: To create executable code snippets. | d: To draw physical components of the system.,a
+What does a solid arrow with an unclosed head in UML diagrams represent?,a: Realization | b: Association | c: Generalization | d: Dependency,b
+Which of the following is not a type of UML diagram?,a: Activity Diagram | b: Component Diagram | c: Flowchart Diagram | d: Sequence Diagram,c
+What is the most recent version of UML as of 2015?,a: UML 2.5 | b: UML 3.5 | c: UML 4.5 | d: UML 1.5,a
+Why might UML diagrams be less popular in some teams?,a: Because they are only used for testing. | b: They are difficult to understand and implement. | c: UML is replaced by Agile methodology. | d: The team prefers writing detailed code comments.,c
+How does UML facilitate better ideation in a project?,a: It allows developers to share their personal notes and ideas. | b: It enables team members to see the big picture of what they are building together. | c: UML diagrams replace the need for written documentation. | d: It helps in understanding user requirements only.,b
+What is a UML diagram used for after code is written?,a: To debug the software | b: To document the workflow or project structure | c: To create user interfaces | d: To test different scenarios,b
+What does UML stand for in the context of software development?,a: User Model Language | b: Unified Modeling Language | c: Universal Methodology Library | d: Utopian Methodology Library,b
+Which of the following is not a type of UML diagram?,a: Activity Diagram | b: Object Diagram | c: Flowchart Diagram | d: Class Diagram,c
+Which of the following is an advantage of using UML in a team setting?,a: It replaces the need for any documentation. | b: It ensures that all members have different perspectives on the system. | c: It helps maintain consistency and clarity in communication. | d: UML is only useful for debugging.,c
+What do teams use UML diagrams to improve upon?,a: Only the coding process | b: The design and architecture of a system or product | c: Team building exercises only | d: Project management activities,b
+Which type of UML diagram can help developers understand the decisions made for a project?,a: Sequence Diagram | b: State Machine Diagram | c: Component Diagram | d: Deployment Diagram,b

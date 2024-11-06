@@ -1,0 +1,92 @@
+What is UML? Everything You Need to Know About Unified Modeling Language
+Diagrams for Software EngineeringSoftware Development
+Back to top
+What is UML?
+UML, or Unified Modeling Language, is a visual modeling language that helps software developers visualize and construct new systems. 
+
+It’s not a programming language — it’s a set of rules specifically for drawing diagrams. There are many types of software engineering diagrams, but think of this language like the software engineer’s version of a blueprint.
+
+If you're brand new to UML, you might like our resource on UML Basics before digging in to UML diagrams. To learn more about UML diagramming, read on or jump ahead to one of the following sections:
+
+Table of Contents
+What is UML?
+Video Intro to UML Diagramming
+Common UML Notations
+History of the Unified Modeling Language
+What does a UML Diagram Do? Why Software Engineers Use the Unified Modeling Language
+Start Diagramming With the Unified Modeling Language
+Ready to get started and just looking for the perfect UML diagram tool? Sign up for a free trial of Gliffy for Confluence for diagramming in Confluence and Jira or check out our online diagramming tool. 
+
+START DIAGRAMMING
+
+Back to top
+Video Intro to UML Diagramming
+Back to top
+Common UML Notations
+While there are multiple types of UML diagrams, each diagram has elements like packages, classes, and associations that are represented with their own graphics. These are common notations you’ll see as you get to know UML further or use as you learn how to make a UML diagram.
+
+Frames & Content Areas
+Content areas are simply the space your UML diagram occupies, and for the sake of organization it can be helpful to enclose that diagram in a frame. If you include a frame, you should also include a heading that describes the parameters of your model. Standard headings and their abbreviations are:
+
+Activity (act)
+Class
+Component (cmp)
+Deployment (dep)
+Interaction (sd)
+Package (pkg)
+State Machine (stm)
+Use Case (uc)
+Packages
+Packages can contain elements within them, including other packages. They’re simply used to group elements under a common name.
+
+Classifiers
+Classes are represented with rectangles and can include varying amounts of data based on your diagram. Classifiers describe a set of objects that have a state and relationships to other objects. The type of classifier rectangle you’re using can have a keyword that distinguishes it as an interface, data type, stereotype, and so on.
+
+Objects
+If you are including a specific state and behavior within a class, you’ll want to make your diagram more specific, too. In this case, you’ll use an object — differentiated from a class rectangle simply by its underlined name.
+
+States
+To describe the states of a process or program, you’ll use circles indicating the initial and final states of your system. You can then describe states throughout your system by using rounded rectangles. In these rectangles, you can give the state a name and define its attributes and responses.
+
+Nodes and Components
+Components represent generalizations of parts of the system or interchangeable pieces. Nodes represent a physical component of a system, like a server. 
+
+Notes and Annotations
+These notes give you space to explain elements, functions, or other important details that give further context to your diagram.
+
+Arrows
+Arrows show the relationships between elements in your diagram. There are a few types of relationships to take note of:
+
+Generalizations
+These parent-child relationships are shown with a solid line and a hollow arrowhead. It shows that one element is a more specific type of another.
+
+Associations
+Association arrows simply show a one-way relationship between elements in your diagram. Information flows from one place to another. This is a solid arrow with a basic, unclosed arrowhead.
+
+Dependencies
+With a dotted line and an unclosed arrow, you can show that one element relies on another to get information. These relationships are important to note because changes can “break” your system.
+
+Realizations
+Realization relationships are shown with a dotted arrow and an unfilled arrowhead. These show that one element is derived from another or that the information on one side of the relationship creates or implements the next.
+
+Back to top
+History of the Unified Modeling Language
+Grady Booch, Ivar Jacobson, and James Rumbaugh created the Unified Modeling Language in 1995 while working at Rational software. In 1997, the Object Management Group adopted UML as a standard for its members, which includes the likes of Hewlett-Packard, IBM, and Apple Computer. With interoperability in mind, this ensured that UML would be a shared visual language for years to come.
+
+In 2005, the language was published by the International Organization for Standardization (ISO) and has since been revised and reviewed to keep it up to date. The most recent version, UML 2.5, was released in 2015.
+
+Today, UML diagrams are less popular because many software teams now work in an Agile environment, but there are certainly reasons to use them. UML diagramming allows teammates to consistently document and convey ideas — and that type of clear communication helps keep everyone on track.
+
+Back to top
+What does a UML Diagram Do? Why Software Engineers Use the Unified Modeling Language
+UML diagrams are one of the most popular software engineering diagrams. When it comes to building new products or systems, there are two key reasons to add UML diagramming to your toolkit.
+
+Better Ideation and Collaboration
+Before developers start coding, UML can help everyone get on the same page. Understanding the system they’re trying to create allows developers to delegate work, identify potential problems before work has started, and work efficiently toward a common goal.
+
+Clearer Documentation of Workflow or Project Structure
+After code is written, a UML diagram can help developers understand the decisions made and structures developed for the project. This information helps teams as they look to improve upon the project for the future.
+
+Back to top
+Start Diagramming With the Unified Modeling Language
+Now that you know what UML is and what it’s used for, why not give it a go? Check out How To Make a UML Diagram or dive right into a free trial of Gliffy.
