@@ -9,6 +9,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<Boolean>;
     register: (name:string, email: string, password: string) => Promise<Boolean>;
     logout: () => void;
+    is_Authenticated: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,7 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error('Login failed', error);
             return false;
         }
-        return false;
     };
 
     const register = async (name: string, email: string, password: string) => {
@@ -40,11 +40,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const user = await AuthService.register(name, email, password);
             console.log(user);
             router.push('/auth/login'); // Redirect to dashboard or any protected route
+            return true;
         } catch (error) {
             setIsAuthenticated(false);
             return false;
         }
-        return false;
     }
 
     const logout = () => {
@@ -53,15 +53,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         router.push('/auth/login'); // Redirect to login page
     };
 
-    useEffect(() => {
-        const user = AuthService.getCurrentUser();
-        if (user && user.accessToken) {
-            setIsAuthenticated(true);
+    const is_Authenticated = async () => {
+        try {
+            const user = await AuthService.getCurrentUser();
+            console.log(user);
+            if (user.accessToken) {
+                setIsAuthenticated(true);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Authentication failed', error);
+            return false;
         }
-    }, []);
+    }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, register, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, register, logout, is_Authenticated }}>
             {children}
         </AuthContext.Provider>
     );

@@ -9,9 +9,9 @@ export default function Layout({
     return (
         <>
             <TopNavBar />
-            {/* <AuthGuard> */}
+            <AuthGuard>
                 {children}
-            {/* </AuthGuard> */}
+            </AuthGuard>
         </>
     );
 }
