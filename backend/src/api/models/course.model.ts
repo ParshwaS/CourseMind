@@ -8,11 +8,11 @@ const CourseSchema = new Schema({
 	},
 	description: {
 		type: String,
-		trim: true,
+		trim: false,
 	},
 	modules: [{
 		type: Schema.Types.ObjectId,
-		ref: "Module",
+		ref: "Material",
 	}],
 	createdAt: {
 		type: Date,
@@ -22,6 +22,11 @@ const CourseSchema = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	userId: {
+		type: Schema.Types.ObjectId,
+		ref: "User",
+		required: true,
+	}
 });
 
 export default model("Course", CourseSchema);

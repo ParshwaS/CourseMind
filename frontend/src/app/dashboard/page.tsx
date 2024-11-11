@@ -1,48 +1,52 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PlusCircle, Trash2, Book } from "lucide-react"
+import coursesService from "@/components/service/courses.service"
+import { useRouter } from "next/navigation";
 // Types for our data structures
 type Module = {
-  id: string
+  _id: string
   name: string
 }
 
 type Course = {
-  id: string
+  _id: string
   name: string
   modules: Module[]
 }
 
 export default function ProfessorDashboard() {
   // Mock data for initial courses
-  const [courses, setCourses] = useState<Course[]>([
-    { id: "1", name: "Introduction to Computer Science", modules: [{ id: "1", name: "Basic Programming" }, { id: "2", name: "Data Structures" }] },
-    { id: "2", name: "Web Development", modules: [{ id: "1", name: "HTML & CSS" }, { id: "2", name: "JavaScript Basics" }] },
-  ])
+  const [courses, setCourses] = useState<Course[]>([])
+
+  const router = useRouter()
 
   const [newCourseName, setNewCourseName] = useState("")
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+
+  useEffect(() => {
+    coursesService.get().then((data) => {
+      setCourses(data)
+    })
+  }, [])
 
   const addCourse = () => {
     if (newCourseName.trim() !== "") {
-      const newCourse: Course = {
-        id: (courses.length + 1).toString(),
-        name: newCourseName,
-        modules: []
-      }
-      setCourses([...courses, newCourse])
-      setNewCourseName("")
+      coursesService.create(newCourseName).then((data) => {
+        coursesService.get().then((data) => {
+          setCourses(data)
+        })
+        setNewCourseName("")
+      })
     }
   }
 
   const deleteCourse = (id: string) => {
-    setCourses(courses.filter(course => course.id !== id))
+    setCourses(courses.filter(course => course._id !== id))
   }
 
   return (
@@ -62,34 +66,18 @@ export default function ProfessorDashboard() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {courses.map((course) => (
-          <Card key={course.id}>
+          <Card key={course._id}>
             <CardHeader>
               <CardTitle>{course.name}</CardTitle>
-              <CardDescription>Course ID: {course.id}</CardDescription>
             </CardHeader>
             <CardContent>
               <p>{course.modules.length} modules</p>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" onClick={() => setSelectedCourse(course)}>
-                    <Book className="mr-2 h-4 w-4" /> View Modules
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>{selectedCourse?.name} Modules</DialogTitle>
-                    <DialogDescription>List of modules for this course</DialogDescription>
-                  </DialogHeader>
-                  <ul className="mt-4">
-                    {selectedCourse?.modules.map((module) => (
-                      <li key={module.id} className="mb-2">{module.name}</li>
-                    ))}
-                  </ul>
-                </DialogContent>
-              </Dialog>
-              <Button variant="destructive" onClick={() => deleteCourse(course.id)}>
+              <Button variant="outline" onClick={() => {router.push("/dashboard/course/"+course._id)}}>
+                <Book className="mr-2 h-4 w-4" /> View Modules
+              </Button>
+              <Button variant="destructive" onClick={() => deleteCourse(course._id)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
               </Button>
             </CardFooter>
