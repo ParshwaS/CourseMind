@@ -1,6 +1,6 @@
 What is UML? Everything You Need to Know About Unified Modeling Language
 Diagrams for Software EngineeringSoftware Development
-Back to top
+
 What is UML?
 UML, or Unified Modeling Language, is a visual modeling language that helps software developers visualize and construct new systems. 
 
@@ -19,9 +19,7 @@ Ready to get started and just looking for the perfect UML diagram tool? Sign up 
 
 START DIAGRAMMING
 
-Back to top
 Video Intro to UML Diagramming
-Back to top
 Common UML Notations
 While there are multiple types of UML diagrams, each diagram has elements like packages, classes, and associations that are represented with their own graphics. These are common notations you’ll see as you get to know UML further or use as you learn how to make a UML diagram.
 
@@ -69,7 +67,6 @@ With a dotted line and an unclosed arrow, you can show that one element relies o
 Realizations
 Realization relationships are shown with a dotted arrow and an unfilled arrowhead. These show that one element is derived from another or that the information on one side of the relationship creates or implements the next.
 
-Back to top
 History of the Unified Modeling Language
 Grady Booch, Ivar Jacobson, and James Rumbaugh created the Unified Modeling Language in 1995 while working at Rational software. In 1997, the Object Management Group adopted UML as a standard for its members, which includes the likes of Hewlett-Packard, IBM, and Apple Computer. With interoperability in mind, this ensured that UML would be a shared visual language for years to come.
 
@@ -77,7 +74,6 @@ In 2005, the language was published by the International Organization for Standa
 
 Today, UML diagrams are less popular because many software teams now work in an Agile environment, but there are certainly reasons to use them. UML diagramming allows teammates to consistently document and convey ideas — and that type of clear communication helps keep everyone on track.
 
-Back to top
 What does a UML Diagram Do? Why Software Engineers Use the Unified Modeling Language
 UML diagrams are one of the most popular software engineering diagrams. When it comes to building new products or systems, there are two key reasons to add UML diagramming to your toolkit.
 
@@ -87,6 +83,5 @@ Before developers start coding, UML can help everyone get on the same page. Unde
 Clearer Documentation of Workflow or Project Structure
 After code is written, a UML diagram can help developers understand the decisions made and structures developed for the project. This information helps teams as they look to improve upon the project for the future.
 
-Back to top
 Start Diagramming With the Unified Modeling Language
 Now that you know what UML is and what it’s used for, why not give it a go? Check out How To Make a UML Diagram or dive right into a free trial of Gliffy.

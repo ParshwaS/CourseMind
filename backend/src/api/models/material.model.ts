@@ -11,9 +11,13 @@ const MaterialSchema = new Schema({
 		required: true,
 		trim: true,
 	},
-	module: {
+	content: {
+		type: String,
+		required: false,
+	},
+	course: {
 		type: Schema.Types.ObjectId,
-		ref: "Module",
+		ref: "Course",
 		required: true,
 	},
 	createdAt: {
@@ -24,6 +28,11 @@ const MaterialSchema = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	userId: {
+		type: Schema.Types.ObjectId,
+		ref: "User",
+		required: true,
+	}
 });
 
-export default model("CourseMaterial", MaterialSchema);
+export default model("material", MaterialSchema);
