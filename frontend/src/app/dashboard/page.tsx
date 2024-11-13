@@ -21,7 +21,7 @@ type Course = {
 }
 
 export default function ProfessorDashboard() {
-  // Mock data for initial courses
+  
   const [courses, setCourses] = useState<Course[]>([])
 
   const router = useRouter()

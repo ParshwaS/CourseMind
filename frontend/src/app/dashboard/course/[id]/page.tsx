@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { PlusIcon, TrashIcon, UploadIcon, FileIcon } from 'lucide-react'
 import coursesService from "@/components/service/courses.service"
+import modulesService from "@/components/service/modules.service"
 
 type File = {
   id: number;
@@ -17,22 +18,22 @@ type File = {
 
 type Module = {
   id: number;
-  content: string;
-}
-
-type Chapter = {
-  id: number;
   title: string;
   files: File[];
-  quizzes: Module[];
-  assignments: Module[];
+  quizzes: { id: number; title: string }[];
+  assignments: { id: number; title: string }[];
 }
 
 export default function ChapterContent({ params }: { params: { id: string } }) {
-  const [chapters, setChapters] = useState<Chapter[]>([])
+  const [modules, setModules] = useState<Module[]>([])
   const [courseName, setCourseName] = useState("")
-  const [isNewChapterDialogOpen, setIsNewChapterDialogOpen] = useState(false)
-  const [newChapterTitle, setNewChapterTitle] = useState("")
+  const [isNewModuleDialogOpen, setIsNewModuleDialogOpen] = useState(false)
+  const [newModuleTitle, setNewModuleTitle] = useState("")
+  const [isNewQuizDialogOpen, setIsNewQuizDialogOpen] = useState(false)
+  const [isNewAssignmentDialogOpen, setIsNewAssignmentDialogOpen] = useState(false)
+  const [newQuizTitle, setNewQuizTitle] = useState("")
+  const [newAssignmentTitle, setNewAssignmentTitle] = useState("")
+  const [activeModuleIndex, setActiveModuleIndex] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -51,80 +52,104 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
     fetchCourseName();
   }, [params.id]);
 
-  const addChapter = () => {
-    if (newChapterTitle.trim()) {
-      setChapters(prevChapters => [
-        ...prevChapters,
-        {
-          id: Date.now(),
-          title: newChapterTitle,
-          files: [],
-          quizzes: [],
-          assignments: []
+  const addModule = async (courseId: string) => {
+    if (newModuleTitle.trim()) {
+      try {
+        // Call the backend to create the module
+        const newModule = await modulesService.create(newModuleTitle, courseId);
+  
+        if (newModule) {
+          // Update local state with the new module returned from the backend
+          setModules(prevModules => [
+            ...prevModules,
+            {
+              id: newModule._id,
+              title: newModule.name,
+              files: [],
+              quizzes: [],
+              assignments: []
+            }
+          ]);
         }
-      ]);
-      setNewChapterTitle("");
-      setIsNewChapterDialogOpen(false);
+  
+        // Clear input and close the dialog
+        setNewModuleTitle("");
+        setIsNewModuleDialogOpen(false);
+      } catch (error) {
+        console.error("Failed to create module:", error);
+        // Optionally, display an error to the user
+      }
     }
+  };
+
+  const deleteModule = (moduleIndex: number) => {
+    setModules(prevModules => prevModules.filter((_, index) => index !== moduleIndex));
   }
 
-  const deleteChapter = (chapterIndex: number) => {
-    setChapters(prevChapters => prevChapters.filter((_, index) => index !== chapterIndex));
+  const handleFileUpload = (moduleIndex: number, uploadedFiles: FileList) => {
+    setModules(prevModules => {
+      const newModules = [...prevModules];
+      const newFiles = Array.from(uploadedFiles).map(file => ({
+        id: Date.now() + Math.random(),
+        name: file.name,
+        type: file.type
+      }));
+      newModules[moduleIndex].files = [...newModules[moduleIndex].files, ...newFiles];
+      return newModules;
+    });
   }
 
-  const handleFileUpload = (chapterIndex: number, uploadedFiles: FileList) => {
-    const file = uploadedFiles[0]; // Limit to the first file to prevent duplicates
-    if (file) {
-      setChapters(prevChapters => {
-        const newChapters = [...prevChapters];
-        const newFile = {
+  const deleteFile = (moduleIndex: number, fileId: number) => {
+    setModules(prevModules => {
+      const newModules = [...prevModules];
+      newModules[moduleIndex].files = newModules[moduleIndex].files.filter(file => file.id !== fileId);
+      return newModules;
+    });
+  }
+
+  const addQuiz = () => {
+    if (newQuizTitle.trim() && activeModuleIndex !== null) {
+      setModules(prevModules => {
+        const newModules = [...prevModules];
+        newModules[activeModuleIndex].quizzes.push({
           id: Date.now(),
-          name: file.name,
-          type: file.type
-        };
-        newChapters[chapterIndex].files = [...newChapters[chapterIndex].files, newFile];
-        return newChapters;
+          title: newQuizTitle,
+        });
+        return newModules;
       });
+      setNewQuizTitle("");
+      setIsNewQuizDialogOpen(false);
     }
   }
 
-  const deleteFile = (chapterIndex: number, fileId: number) => {
-    setChapters(prevChapters => {
-      const newChapters = [...prevChapters];
-      newChapters[chapterIndex].files = newChapters[chapterIndex].files.filter(file => file.id !== fileId);
-      return newChapters;
+  const addAssignment = () => {
+    if (newAssignmentTitle.trim() && activeModuleIndex !== null) {
+      setModules(prevModules => {
+        const newModules = [...prevModules];
+        newModules[activeModuleIndex].assignments.push({
+          id: Date.now(),
+          title: newAssignmentTitle,
+        });
+        return newModules;
+      });
+      setNewAssignmentTitle("");
+      setIsNewAssignmentDialogOpen(false);
+    }
+  }
+
+  const deleteQuiz = (moduleIndex: number, quizId: number) => {
+    setModules(prevModules => {
+      const newModules = [...prevModules];
+      newModules[moduleIndex].quizzes = newModules[moduleIndex].quizzes.filter(quiz => quiz.id !== quizId);
+      return newModules;
     });
   }
 
-  const deleteModule = (chapterIndex: number, type: 'quizzes' | 'assignments', moduleId: number) => {
-    setChapters(prevChapters => {
-      const newChapters = [...prevChapters];
-      newChapters[chapterIndex][type] = newChapters[chapterIndex][type].filter(module => module.id !== moduleId);
-      return newChapters;
-    });
-  }
-
-  const addQuiz = (chapterIndex: number) => {
-    setChapters(prevChapters => {
-      const newChapters = [...prevChapters];
-      const newQuiz = {
-        id: Date.now(),
-        content: "New Quiz"
-      };
-      newChapters[chapterIndex].quizzes = [...newChapters[chapterIndex].quizzes, newQuiz];
-      return newChapters;
-    });
-  }
-
-  const addAssignment = (chapterIndex: number) => {
-    setChapters(prevChapters => {
-      const newChapters = [...prevChapters];
-      const newAssignment = {
-        id: Date.now(),
-        content: "New Assignment"
-      };
-      newChapters[chapterIndex].assignments = [...newChapters[chapterIndex].assignments, newAssignment];
-      return newChapters;
+  const deleteAssignment = (moduleIndex: number, assignmentId: number) => {
+    setModules(prevModules => {
+      const newModules = [...prevModules];
+      newModules[moduleIndex].assignments = newModules[moduleIndex].assignments.filter(assignment => assignment.id !== assignmentId);
+      return newModules;
     });
   }
 
@@ -132,19 +157,19 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{courseName || "Loading..."}</h1>
-        <Button onClick={() => setIsNewChapterDialogOpen(true)}>
+        <Button onClick={() => setIsNewModuleDialogOpen(true)}>
           <PlusIcon className="h-4 w-4 mr-2" />
-          New Chapter
+          New Module
         </Button>
       </div>
 
-      {chapters.map((chapter, chapterIndex) => (
-        <Card key={chapter.id} className="mb-6">
+      {modules.map((module, moduleIndex) => (
+        <Card key={module.id} className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{chapter.title}</CardTitle>
-            <Button variant="destructive" size="sm" onClick={() => deleteChapter(chapterIndex)}>
+            <CardTitle>{module.title}</CardTitle>
+            <Button variant="destructive" size="sm" onClick={() => deleteModule(moduleIndex)}>
               <TrashIcon className="h-4 w-4 mr-2" />
-              Delete Chapter
+              Delete Module
             </Button>
           </CardHeader>
           <CardContent>
@@ -159,13 +184,13 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
                   type="file"
                   ref={fileInputRef}
                   className="hidden"
-                  onChange={(e) => e.target.files && handleFileUpload(chapterIndex, e.target.files)}
+                  onChange={(e) => e.target.files && handleFileUpload(moduleIndex, e.target.files)}
                   multiple
                   aria-label="Upload files"
                 />
               </div>
               <div className="mt-2">
-                {chapter.files.map(file => (
+                {module.files.map(file => (
                   <div key={file.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
                     <span className="flex items-center">
                       <FileIcon className="h-4 w-4 mr-2" />
@@ -173,7 +198,7 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
                     </span>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm">Open</Button>
-                      <Button variant="destructive" size="sm" onClick={() => deleteFile(chapterIndex, file.id)}>
+                      <Button variant="destructive" size="sm" onClick={() => deleteFile(moduleIndex, file.id)}>
                         Delete
                       </Button>
                     </div>
@@ -181,55 +206,111 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
                 ))}
               </div>
             </div>
-            
+
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Quizzes</h3>
-              <Button onClick={() => addQuiz(chapterIndex)} size="sm">
+              <Button 
+                onClick={() => {
+                  setActiveModuleIndex(moduleIndex);
+                  setIsNewQuizDialogOpen(true);
+                }} 
+                size="sm"
+              >
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Add Quiz
               </Button>
-              {chapter.quizzes.map(quiz => (
-                <div key={quiz.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
-                  <span>{quiz.content}</span>
-                  <Button variant="destructive" size="sm" onClick={() => deleteModule(chapterIndex, 'quizzes', quiz.id)}>
-                    Delete
-                  </Button>
-                </div>
-              ))}
+              <div className="mt-2">
+                {module.quizzes.map(quiz => (
+                  <div key={quiz.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+                    <span>{quiz.title}</span>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm">Open</Button>
+                      <Button variant="destructive" size="sm" onClick={() => deleteQuiz(moduleIndex, quiz.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Assignments</h3>
-              <Button onClick={() => addAssignment(chapterIndex)} size="sm">
+              <Button 
+                onClick={() => {
+                  setActiveModuleIndex(moduleIndex);
+                  setIsNewAssignmentDialogOpen(true);
+                }} 
+                size="sm"
+              >
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Add Assignment
               </Button>
-              {chapter.assignments.map(assignment => (
-                <div key={assignment.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
-                  <span>{assignment.content}</span>
-                  <Button variant="destructive" size="sm" onClick={() => deleteModule(chapterIndex, 'assignments', assignment.id)}>
-                    Delete
-                  </Button>
-                </div>
-              ))}
+              <div className="mt-2">
+                {module.assignments.map(assignment => (
+                  <div key={assignment.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+                    <span>{assignment.title}</span>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm">Open</Button>
+                      <Button variant="destructive" size="sm" onClick={() => deleteAssignment(moduleIndex, assignment.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
       ))}
 
-      <Dialog open={isNewChapterDialogOpen} onOpenChange={setIsNewChapterDialogOpen}>
+      <Dialog open={isNewModuleDialogOpen} onOpenChange={setIsNewModuleDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Chapter</DialogTitle>
+            <DialogTitle>Create New Module</DialogTitle>
           </DialogHeader>
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="new-chapter">Chapter Title</Label>
+            <Label htmlFor="new-module">Module Title</Label>
             <Input
-              id="new-chapter"
-              value={newChapterTitle}
-              onChange={(e) => setNewChapterTitle(e.target.value)}
+              id="new-module"
+              value={newModuleTitle}
+              onChange={(e) => setNewModuleTitle(e.target.value)}
             />
-            <Button onClick={addChapter}>Create Chapter</Button>
+            <Button onClick={addModule}>Create Module</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isNewQuizDialogOpen} onOpenChange={setIsNewQuizDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Quiz</DialogTitle>
+          </DialogHeader>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="new-quiz">Quiz Title</Label>
+            <Input
+              id="new-quiz"
+              value={newQuizTitle}
+              onChange={(e) => setNewQuizTitle(e.target.value)}
+            />
+            <Button onClick={addQuiz}>Create Quiz</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isNewAssignmentDialogOpen} onOpenChange={setIsNewAssignmentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Assignment</DialogTitle>
+          </DialogHeader>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="new-assignment">Assignment Title</Label>
+            <Input
+              id="new-assignment"
+              value={newAssignmentTitle}
+              onChange={(e) => setNewAssignmentTitle(e.target.value)}
+            />
+            <Button onClick={addAssignment}>Create Assignment</Button>
           </div>
         </DialogContent>
       </Dialog>

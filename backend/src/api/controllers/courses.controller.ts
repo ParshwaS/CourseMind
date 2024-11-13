@@ -15,22 +15,18 @@ class CourseController {
 	}
 
 	public async getById(req: Request, res: Response, next: NextFunction) {
-		return courseModel
-			.findById(req.query.id)
-			.then((courses: any) => {
-                let materials: any[] = [];
-				courses?.modules.forEach((module: any) => {
-					materialModel.findById(module).then((material) => {
-                        // console.log(material);
-						materials.push(material);
-					});
-				});
-				res.status(200).json({course: courses, materials});
-			})
-			.catch((error) => {
-				console.log(error);
-				return next(error);
-			});
+		try {
+			const course = await courseModel.findById(req.query.id);
+
+			if (!course) {
+				return res.status(404).json({ message: "Course not found" });
+			}
+
+			return res.status(200).json({ course });
+		} catch (error) {
+			console.log(error);
+			return next(error);
+		}
 	}
 
 	public async create(req: Request, res: Response, next: NextFunction) {
