@@ -31,8 +31,6 @@ class ModuleController{
     public async create(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, courseId } = req.body;
-
-            console.log(name, courseId);
     
             // Validate required fields
             if (!courseId || !name) {

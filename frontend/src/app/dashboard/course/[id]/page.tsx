@@ -56,6 +56,7 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
     if (newModuleTitle.trim()) {
       try {
         // Call the backend to create the module
+        console.log(newModuleTitle, courseId);
         const newModule = await modulesService.create(newModuleTitle, courseId);
   
         if (newModule) {
@@ -276,7 +277,7 @@ export default function ChapterContent({ params }: { params: { id: string } }) {
               value={newModuleTitle}
               onChange={(e) => setNewModuleTitle(e.target.value)}
             />
-            <Button onClick={addModule}>Create Module</Button>
+            <Button onClick={() => addModule(params.id)}>Create Module</Button>
           </div>
         </DialogContent>
       </Dialog>
