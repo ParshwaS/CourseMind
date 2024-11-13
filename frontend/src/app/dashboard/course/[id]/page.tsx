@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import coursesService from "@/components/service/courses.service"
 import { PlusIcon, TrashIcon, UploadIcon, PencilIcon } from 'lucide-react'
 import {
   Dialog,
@@ -14,6 +15,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import axios from 'axios'
 
 type Module = {
   id: number;
@@ -63,6 +65,20 @@ export default function ChapterContent({ params }: { params: { id: string, chapt
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingModule, setEditingModule] = useState<{ sessionIndex: number, moduleId: number, content: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [courseName, setCourseName] = useState("")
+    // Fetch the course name based on params.id
+    useEffect(() => {
+      const fetchCourseName = async () => {
+        try {
+          const { course } = await coursesService.getById(params.id);
+        setCourseName(course.name);
+        } catch (error) {
+          console.error("Failed to fetch course name:", error);
+        }
+      };
+      fetchCourseName();
+    }, [params.id]);
 
   const addModule = (sessionIndex: number) => {
     setSessions(prevSessions => {
@@ -114,7 +130,7 @@ export default function ChapterContent({ params }: { params: { id: string, chapt
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Course {params.id}</h1>
+      <h1 className="text-3xl font-bold mb-6">{courseName || "Loading..."}</h1>
       {sessions.map((session, sessionIndex) => (
         <Card key={session.title} className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">

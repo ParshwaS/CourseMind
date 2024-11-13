@@ -38,10 +38,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const register = async (name: string, email: string, password: string) => {
         try {
             const user = await AuthService.register(name, email, password);
-            console.log(user);
-            router.push('/auth/login'); // Redirect to dashboard or any protected route
+            router.push('/auth/login');
             return true;
         } catch (error) {
+            console.log(error);
             setIsAuthenticated(false);
             return false;
         }

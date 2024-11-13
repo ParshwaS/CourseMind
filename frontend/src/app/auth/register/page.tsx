@@ -28,7 +28,7 @@ export default function LoginScreen() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Here you would typically send the data to your backend
+        
         const x = await register(formData.name, formData.email, formData.password);
 
         if (!x) {

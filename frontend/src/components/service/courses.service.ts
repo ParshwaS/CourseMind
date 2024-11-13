@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/courses/";
+const API_URL = "http://localhost:3000/api/courses/";
 
 class AuthService {
 	async get() {
@@ -46,6 +46,24 @@ class AuthService {
 			.post(
 				API_URL + "create",
 				{ name },
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then((response) => {
+				return response.data;
+			});
+	}
+
+	async delete(id: string) {
+		if (localStorage.getItem("user") === null) {
+			return null;
+		}
+		
+		const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
+		
+		return axios
+			.delete(API_URL + `${id}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}

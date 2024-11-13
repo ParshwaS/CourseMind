@@ -48,6 +48,23 @@ class CourseController {
 				return next(error);
 			});
 	}
+
+	public async delete(req: Request, res: Response, next: NextFunction) {
+		
+        const courseId = req.params.id;
+		console.log(courseId);
+        return courseModel
+            .findByIdAndDelete(courseId)
+            .then((deletedCourse) => {
+                if (!deletedCourse) {
+                    return res.status(404).json({ message: "Course not found" });
+                }
+                res.status(200).json({ message: "Course deleted successfully" });
+            })
+            .catch((error) => {
+                return next(error);
+            });
+    }
 }
 
 export default new CourseController();
