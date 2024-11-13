@@ -1,0 +1,151 @@
+Folder PATH listing
+Volume serial number is 9A07-9660
+D:.
+¦   .DS_Store
+¦   project_structure.txt
+¦   README.md
+¦   
++---backend
+¦   ¦   .dockerignore
+¦   ¦   .gitignore
+¦   ¦   jest.config.cts
+¦   ¦   package.json
+¦   ¦   README.md
+¦   ¦   tsconfig.json
+¦   ¦   
+¦   +---src
+¦       ¦   app.ts
+¦       ¦   index.ts
+¦       ¦   
+¦       +---api
+¦       ¦   +---controllers
+¦       ¦   ¦       auth.controller.ts
+¦       ¦   ¦       courses.controller.ts
+¦       ¦   ¦       gen.controller.ts
+¦       ¦   ¦       
+¦       ¦   +---models
+¦       ¦   ¦       assignment.model.ts
+¦       ¦   ¦       course.model.ts
+¦       ¦   ¦       material.model.ts
+¦       ¦   ¦       module.model.ts
+¦       ¦   ¦       quiz.model.ts
+¦       ¦   ¦       user.model.ts
+¦       ¦   ¦       
+¦       ¦   +---routers
+¦       ¦           auth.routes.ts
+¦       ¦           courses.routes.ts
+¦       ¦           gen.routes.ts
+¦       ¦           index.ts
+¦       ¦           
+¦       +---lib
+¦       ¦   +---config
+¦       ¦   ¦   +---database
+¦       ¦   ¦           config.ts
+¦       ¦   ¦           mongoConfig.ts
+¦       ¦   ¦           
+¦       ¦   +---helpers
+¦       ¦   ¦       customError.ts
+¦       ¦   ¦       customRequestInterface.ts
+¦       ¦   ¦       customTypes.ts
+¦       ¦   ¦       logger.ts
+¦       ¦   ¦       
+¦       ¦   +---middlewares
+¦       ¦           auth.middleware.ts
+¦       ¦           errorHandlerMiddleware.ts
+¦       ¦           index.ts
+¦       ¦           
+¦       +---__tests__
+¦               db.ts
+¦               user.test.ts
+¦               
++---docs
+¦       SSDI-Context Diagram.drawio (1).png
+¦       SSDI-MVC Diagram.drawio.png
+¦       SSDI-UML Model.drawio.png
+¦       SSDI-User Flow.drawio.png
+¦       User Stories to Use Cases.pdf
+¦       
++---frontend
+¦   ¦   .dockerignore
+¦   ¦   .eslintrc.json
+¦   ¦   .gitignore
+¦   ¦   components.json
+¦   ¦   next.config.js
+¦   ¦   package.json
+¦   ¦   postcss.config.js
+¦   ¦   README.md
+¦   ¦   tailwind.config.ts
+¦   ¦   tsconfig.json
+¦   ¦   
+¦   +---public
+¦   ¦       next.svg
+¦   ¦       service-worker.js
+¦   ¦       vercel.svg
+¦   ¦       
+¦   +---src
+¦       +---app
+¦       ¦   ¦   favicon.ico
+¦       ¦   ¦   globals.css
+¦       ¦   ¦   layout.tsx
+¦       ¦   ¦   page.tsx
+¦       ¦   ¦   
+¦       ¦   +---auth
+¦       ¦   ¦   +---login
+¦       ¦   ¦   ¦       page.tsx
+¦       ¦   ¦   ¦       
+¦       ¦   ¦   +---register
+¦       ¦   ¦           page.tsx
+¦       ¦   ¦           
+¦       ¦   +---dashboard
+¦       ¦       ¦   layout.tsx
+¦       ¦       ¦   page.tsx
+¦       ¦       ¦   
+¦       ¦       +---course
+¦       ¦       ¦   +---[id]
+¦       ¦       ¦           CourseList.tsx
+¦       ¦       ¦           page.tsx
+¦       ¦       ¦           page2.tsx
+¦       ¦       ¦           
+¦       ¦       +---genQuiz
+¦       ¦               page.tsx
+¦       ¦               
+¦       +---components
+¦       ¦   +---context
+¦       ¦   ¦       auth.context.tsx
+¦       ¦   ¦       
+¦       ¦   +---custom
+¦       ¦   ¦       authGuard.tsx
+¦       ¦   ¦       navbar.tsx
+¦       ¦   ¦       
+¦       ¦   +---service
+¦       ¦   ¦       auth.service.ts
+¦       ¦   ¦       courses.service.ts
+¦       ¦   ¦       generate.service.ts
+¦       ¦   ¦       service.tsx
+¦       ¦   ¦       
+¦       ¦   +---ui
+¦       ¦           button.tsx
+¦       ¦           card.tsx
+¦       ¦           dialog.tsx
+¦       ¦           dropdown-menu.tsx
+¦       ¦           input.tsx
+¦       ¦           label.tsx
+¦       ¦           sheet.tsx
+¦       ¦           textarea.tsx
+¦       ¦           toast.tsx
+¦       ¦           toaster.tsx
+¦       ¦           use-toast.ts
+¦       ¦           
+¦       +---lib
+¦               utils.ts
+¦               
++---models
+    ¦   .gitignore
+    ¦   data.txt
+    ¦   gen_ai.csv
+    ¦   main.py
+    ¦   mcq.ipynb
+    ¦   
+    +---__pycache__
+            main.cpython-38.pyc
+            

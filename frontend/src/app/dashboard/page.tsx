@@ -21,7 +21,7 @@ type Course = {
 }
 
 export default function ProfessorDashboard() {
-  // Mock data for initial courses
+  
   const [courses, setCourses] = useState<Course[]>([])
 
   const router = useRouter()
@@ -30,6 +30,7 @@ export default function ProfessorDashboard() {
 
   useEffect(() => {
     coursesService.get().then((data) => {
+      console.log(data);
       setCourses(data)
     })
   }, [])

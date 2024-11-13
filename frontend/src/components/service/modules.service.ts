@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/courses/";
+const API_URL = "http://localhost:3000/api/courses/modules/";
 
-class AuthService {
+class ModuleService {
 	async get() {
 		if (localStorage.getItem("user") === null) {
 			return null;
@@ -35,7 +35,7 @@ class AuthService {
 			});
 	}
 
-	async create(name: string) {
+	async create(name: string, courseId: string) {
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
@@ -45,7 +45,7 @@ class AuthService {
 		return axios
 			.post(
 				API_URL + "create",
-				{ name },
+				{ name, courseId },
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
@@ -74,4 +74,4 @@ class AuthService {
 	}
 }
 
-export default new AuthService();
+export default new ModuleService();

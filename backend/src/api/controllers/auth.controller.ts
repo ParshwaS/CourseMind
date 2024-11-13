@@ -27,23 +27,31 @@ class AuthController {
 	}
 
 	public async register(req: Request, res: Response, next: NextFunction) {
-		const { name, email, password } = req.body;
-		return hash(password, 10, (err, hash) => {
-			if (err) {
-				next(err);
-			}
-			return User.create({
+		try {
+			const { name, email, password } = req.body;
+	
+			// Log incoming data for debugging purposes
+			console.log("Received registration data:", { name, email });
+	
+			// Hash the password
+			const hashedPassword = await hash(password, 10);
+	
+			// Attempt to create a new user in the database
+			await User.create({
 				name,
 				email,
-				password: hash,
-			})
-				.then(() => {
-					return res.status(200).json({ message: "User created" });
-				})
-				.catch((err) => {
-					next(err);
-				});
-		});
+				password: hashedPassword,
+			});
+	
+			// Send success response with 201 status code
+			return res.status(200).json({ message: "User created" });
+		} catch (err) {
+			// Log the specific error for debugging
+			console.error("Error during registration:", err);
+	
+			// Pass error to the error handler middleware
+			next(err);
+		}
 	}
 
 	public async me(req: Request, res: Response, next: NextFunction) {
