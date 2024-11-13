@@ -30,6 +30,7 @@ export default function ProfessorDashboard() {
 
   useEffect(() => {
     coursesService.get().then((data) => {
+      console.log(data);
       setCourses(data)
     })
   }, [])
@@ -43,19 +44,11 @@ export default function ProfessorDashboard() {
         setNewCourseName("")
       })
     }
-    else {
-      alert("Course name cannot be empty!\nPlease enter a valid course name."); 
-    }
   }
 
-const deleteCourse = (id: string) => {
-    coursesService.delete(id).then(() => {
-        setCourses(courses.filter(course => course._id !== id));
-    }).catch((error) => {
-        console.error("Failed to delete course:", error);
-        alert("Failed to delete course. Please try again.");
-    });
-};
+  const deleteCourse = (id: string) => {
+    setCourses(courses.filter(course => course._id !== id))
+  }
 
   return (
     <div className="container mx-auto p-4">
