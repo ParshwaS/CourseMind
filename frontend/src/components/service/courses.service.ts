@@ -10,6 +10,8 @@ class AuthService {
 		const token = JSON.parse(
 			localStorage.getItem("user") as string
 		).accessToken;
+
+		console.log(token);
 		return axios
 			.get(API_URL + "get", {
 				headers: { Authorization: `Bearer ${token}` },
@@ -36,6 +38,7 @@ class AuthService {
 	}
 
 	async create(name: string) {
+
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
@@ -55,19 +58,33 @@ class AuthService {
 			});
 	}
 
-	async delete(id: string) {
+	async updateByModuleId(courseId: string, moduleId: string) {
+
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
-		
 		const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
-		
-		return axios
-			.delete(API_URL + `${id}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+		return axios.patch(
+			`${API_URL}updateModuleId/${courseId}`,
+			{ moduleId },
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		)
+		.then(response => response.data)
+		.catch(error => {
+			console.error("Error updating course with module ID:", error);
+			throw error;
+		});
+	}
+
+	async delete(courseId: string) {
+
+		if (localStorage.getItem("user") === null) {
+			return null;
+		}
+		const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
+		return axios.delete(API_URL + `${courseId}`,{headers: { Authorization: `Bearer ${token}` },})
 			.then((response) => {
 				return response.data;
 			});

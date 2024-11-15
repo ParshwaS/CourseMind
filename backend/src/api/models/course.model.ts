@@ -10,7 +10,7 @@ const CourseSchema = new Schema({
 		type: String,
 		trim: false,
 	},
-	modules: [{
+	moduleId: [{
 		type: Schema.Types.ObjectId,
 		ref: "Material",
 	}],

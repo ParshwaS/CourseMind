@@ -1,14 +1,14 @@
-'use client'
+"use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { PlusCircle, Trash2, Book } from 'lucide-react'
-import { useRouter } from "next/navigation"
+import { Label } from "@/components/ui/label"
+import { PlusCircle, Trash2, Book } from "lucide-react"
 import coursesService from "@/components/service/courses.service"
-import { error } from "console"
-
+import { useRouter } from "next/navigation";
+// Types for our data structures
 type Module = {
   _id: string
   name: string
@@ -17,56 +17,42 @@ type Module = {
 type Course = {
   _id: string
   name: string
-  moduleId: Module[]
+  modules: Module[]
 }
 
-export default function Dashboard() {
+export default function ProfessorDashboard() {
+  
+  const [courses, setCourses] = useState<Course[]>([])
 
   const router = useRouter()
-  const [courses, setCourses] = useState<Course[]>([])
+
   const [newCourseName, setNewCourseName] = useState("")
 
   useEffect(() => {
     coursesService.get().then((data) => {
+      console.log(data);
       setCourses(data)
     })
   }, [])
 
   const addCourse = () => {
-    if ( newCourseName !== "") {
-      coursesService.create(newCourseName.trim())
-      .then(() => {
-        coursesService.get()
-        .then((data) => {
-          setCourses(data);
-        });
+    if (newCourseName.trim() !== "") {
+      coursesService.create(newCourseName).then((data) => {
+        coursesService.get().then((data) => {
+          setCourses(data)
+        })
         setNewCourseName("")
-      });
+      })
     }
   }
 
-  const deleteCourse = useCallback(async (id: string) => {
-    try {
-      // Check if the course exists in the backend before making the API call
-      const courseExists = courses.find(course => course._id === id);
-      if (!courseExists) {
-        console.warn(`Course with ID ${id} not found in state`);
-        return;
-      }
-  
-      await coursesService.delete(id);
-  
-      // Update the state after successful deletion
-      setCourses(prevCourses => prevCourses.filter(course => course._id !== id));
-      console.log("Course deleted:", id);
-    } catch (error) {
-      console.error("Error deleting course:", error);
-    }
-  }, [courses]);
+  const deleteCourse = (id: string) => {
+    setCourses(courses.filter(course => course._id !== id))
+  }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4">Professor Dashboard</h1>
       <div className="flex flex-wrap gap-4 mb-4">
         <Input
           type="text"
@@ -86,11 +72,11 @@ export default function Dashboard() {
               <CardTitle>{course.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{course.moduleId.length} modules</p>
+              <p>{course.modules.length} modules</p>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => router.push(`/dashboard/course/${course._id}`)}>
-                <Book className="mr-2 h-4 w-4" /> View Course
+              <Button variant="outline" onClick={() => {router.push("/dashboard/course/"+course._id)}}>
+                <Book className="mr-2 h-4 w-4" /> View Modules
               </Button>
               <Button variant="destructive" onClick={() => deleteCourse(course._id)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete

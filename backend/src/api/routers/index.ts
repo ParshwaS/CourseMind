@@ -9,6 +9,6 @@ const router = Router();
 router.use("/auth", authRouter);
 router.use("/genQuiz", genRouter);
 router.use("/courses", coursesRouter);
-router.use("/courses/modules", moduleRouter)
+router.use("/modules", moduleRouter);
 
 export default router;

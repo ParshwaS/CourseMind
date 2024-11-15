@@ -18,7 +18,7 @@ const AssignmentSchema = new Schema({
 		type: String,
 		trim: true,
 	},
-	module: {
+	moduleId: {
 		type: Schema.Types.ObjectId,
 		ref: "Module",
 		required: true,
