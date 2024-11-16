@@ -7,15 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { PlusIcon, TrashIcon, UploadIcon, FileIcon, UserPen } from 'lucide-react'
+import { PlusIcon, TrashIcon, UploadIcon, FileIcon } from 'lucide-react'
 
 import coursesService from "@/components/service/courses.service"
 import modulesService from "@/components/service/modules.service"
 import materialsService from '@/components/service/materials.service'
 
 type Module = {
-  id: string;
+  _id: string;
   name: string;
+  courseId: string;
   materialId: {id: number;name: string;type: string;}[];
   quizId: { id: number; name: string }[];
   assignmentId: { id: number; name: string }[];
@@ -53,6 +54,7 @@ export default function CoursePage() {
   useEffect(() => {
     if (courseId) {
       modulesService.getByCourseId(courseId as string).then((data) => {
+        console.log(data);
         setModules(data);
       });
     }
@@ -67,13 +69,14 @@ export default function CoursePage() {
       if (newModule) {
         setModules(prevModules => [
           ...prevModules, {
-            id: newModule._id,
+            _id: newModule._id,
             name: newModule.name,
+            courseId: courseId,
             materialId: [],
             quizId: [],
             assignmentId: []
           }
-        ])
+        ]);
         console.log("Module added:", newModule.name);
         setNewModuleName("");
         setIsNewModuleDialogOpen(false);
@@ -86,13 +89,12 @@ export default function CoursePage() {
 
   const deleteModule = async (moduleId: string) => {
     try {
-      console.log("Module ID: ", moduleId);
       if (!moduleId) {
         console.error('Module ID not found');
         return;
       }
       await modulesService.delete(moduleId);
-      setModules(prevModules => prevModules.filter(module => module.id !== moduleId));
+      setModules(prevModules => prevModules.filter(module => module._id !== moduleId));
       console.log("Module deleted: ", moduleId);
       setNewModuleName("");
       setIsNewModuleDialogOpen(false);
@@ -101,26 +103,26 @@ export default function CoursePage() {
     }
   };
   
-  const handleFileUpload = async (moduleIndex: number, uploadedFiles: FileList) => {
+  const handleFileUpload = async (moduleId: string, uploadedFiles: FileList, courseId: string) => {
+    console.log("Received moduleId:", moduleId);
     const file = uploadedFiles[0];
     if (!file) return;
 
     try {
-      const moduleId = modules[moduleIndex].id;
-      const uploadedFileData = await materialsService.uploadFile(file, moduleId);
+      const uploadedFileData = await materialsService.uploadFile(file, courseId, moduleId);
 
       console.log('File uploaded successfully:', uploadedFileData);
 
-      setModules(prevModules => {
-        const newModules = [...prevModules];
-        const newFiles = Array.from(uploadedFiles).map(file => ({
-          id: Date.now() + Math.random(),
-          name: file.name,
-          type: file.type
-        }));
-        newModules[moduleIndex].materialId = [...newModules[moduleIndex].materialId, ...newFiles];
-        return newModules;
-      });
+      // setModules(prevModules => {
+      //   const newModules = [...prevModules];
+      //   const newFiles = Array.from(uploadedFiles).map(file => ({
+      //     id: Date.now() + Math.random(),
+      //     name: file.name,
+      //     type: file.type
+      //   }));
+      //   newModules[moduleIndex].materialId = [...newModules[moduleIndex].materialId, ...newFiles];
+      //   return newModules;
+      // });
 
     }catch(error) {
       console.log(error);
@@ -179,14 +181,14 @@ export default function CoursePage() {
       return newModules;
     });
   }
-
+  
   return ( <div className="container mx-auto p-4"> <div className="flex justify-between items-center mb-6"> <h1 className="text-3xl font-bold">{courseName || "Loading..."}</h1> <Button onClick={() => setIsNewModuleDialogOpen(true)}> <PlusIcon className="h-4 w-4 mr-2" /> New Module </Button> </div>
 
   {modules.map((module, moduleIndex) => (
-    <Card key={module.id} className="mb-6">
+    <Card key={module._id} className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{module.name}</CardTitle>
-        <Button variant="destructive" size="sm" onClick={() => deleteModule(module.id)}>
+        <Button variant="destructive" size="sm" onClick={() => deleteModule(module._id)}>
           <TrashIcon className="h-4 w-4 mr-2" />
           Delete Module
         </Button>
@@ -203,7 +205,7 @@ export default function CoursePage() {
               type="file"
               ref={fileInputRef}
               className="hidden"
-              onChange={(e) => e.target.files && handleFileUpload(moduleIndex, e.target.files)}
+              onChange={(e) => e.target.files && handleFileUpload(module._id, e.target.files, courseId as string)}
               multiple
               aria-label="Upload files"
             />
@@ -217,9 +219,7 @@ export default function CoursePage() {
                 </span>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">Open</Button>
-                  <Button variant="destructive" size="sm" onClick={() => deleteFile(moduleIndex, file.id)}>
-                    Delete
-                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => deleteFile(moduleIndex, file.id)}>Delete</Button>
                 </div>
               </div>
             ))}
