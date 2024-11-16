@@ -1,5 +1,4 @@
 import axios from "axios";
-import coursesService from "./courses.service";
 
 const API_URL = "http://localhost:3000/api/modules/";
 
@@ -47,8 +46,6 @@ class ModuleService {
 		const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
 
 		const createdModule = await axios.post(API_URL + "create", { name, courseId }, { headers: { Authorization: `Bearer ${token}` },});
-		  
-		// await coursesService.updateByModuleId(courseId, createdModule.data._id);
 		
 		return createdModule.data;
 	}
