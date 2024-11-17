@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api/genQuiz/";
+const API_URL = "http://localhost:3001/api/generate/";
 
 class GenerateService {
 	async generate(content: any, number: any, subject: any, level: any) {

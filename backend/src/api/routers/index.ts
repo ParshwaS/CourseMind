@@ -10,7 +10,7 @@ import quizzesRouter from "./quizzes.routes"
 const router = Router();
 
 router.use("/auth", authRouter);
-router.use("/genQuiz", genRouter);
+router.use("/generate", genRouter);
 router.use("/courses", coursesRouter);
 router.use("/modules", moduleRouter);
 router.use("/materials", materialRouter);

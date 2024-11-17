@@ -245,6 +245,7 @@ export default function CoursePage() {
       <CardContent>
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Notes</h3>
+          <label className="text-sm text-gray-500">Upload files in the following formats only: PDF, TXT, or Word Documents</label>
           <div className="flex items-center space-x-2">
             <Button onClick={() => fileInputRef.current?.click()} variant="outline" size="sm">
               <UploadIcon className="h-4 w-4 mr-2" />

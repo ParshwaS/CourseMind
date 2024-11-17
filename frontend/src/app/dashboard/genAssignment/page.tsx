@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'; 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,8 +11,22 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import generateService from '@/components/service/generate.service'
+import materialsService from '@/components/service/materials.service';
 
-export default function Component() {
+type Material = {_id: string;
+    name: string;
+    mimeType: string;
+    filePath: string;
+    courseId: string;
+    moduleId: string;
+    use: boolean
+  }
+export default function genAssignment() {
+
+    const searchParams = useSearchParams();
+    const courseId = searchParams.get('courseId');
+    const moduleId = searchParams.get('moduleId');
+
     const [formData, setFormData] = useState({
         text: '',
         number: '',
@@ -20,20 +35,19 @@ export default function Component() {
     })
     const [generatedAssignment, setGeneratedAssignment] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [items, setItems] = useState<{ id: number; name: string; use: boolean }[]>([])
+    const [materials, setMaterials] = useState<Material[]>([])
     const [selectedOption, setSelectedOption] = useState('')
 
     useEffect(() => {
-        // Simulating fetching items based on a parameter
+        // fetching material based on a course and module
         const fetchItems = async () => {
-            // Replace this with your actual API call or logic
-            const response = await fetch('/api/items?param=someValue')
-            const data = await response.json()
-            setItems(data.map((item: any) => ({ ...item, use: false })))
+            const response = await materialsService.getByModuleId(moduleId as string);
+            const data = await response
+            setMaterials(data);
         }
 
         fetchItems()
-    }, []) // Add dependencies if needed
+    }, [])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -48,9 +62,9 @@ export default function Component() {
         setIsLoading(false)
     }
 
-    const handleCheckboxChange = (id: number) => {
-        setItems(items.map(item => 
-            item.id === id ? { ...item, use: !item.use } : item
+    const handleCheckboxChange = (id: string) => {
+        setMaterials(materials.map(item => 
+            item._id === id ? { ...item, use: !item.use } : item
         ))
     }
 
@@ -61,7 +75,7 @@ export default function Component() {
                     <CardTitle>Assignment Generator</CardTitle>
                     <Select value={selectedOption} onValueChange={setSelectedOption}>
                         <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Choose Model" />
+                            <SelectValue placeholder="Chose Model" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="option1">Model 1</SelectItem>
@@ -72,24 +86,51 @@ export default function Component() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {materials.length > 0 && (
                         <div>
-                            <Label htmlFor="text">Text</Label>
+                            <Label htmlFor="text">Notes</Label>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Use</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {materials.map((item) => (
+                                        <TableRow key={item._id}>
+                                            <TableCell>{item.name}</TableCell>
+                                            <TableCell>
+                                                <Checkbox
+                                                    checked={item.use}
+                                                    onCheckedChange={() => handleCheckboxChange(item._id)}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        )}
+
+                        <div>
+                            <Label htmlFor="text">Notes/Inputs</Label>
                             <Textarea
                                 id="text"
                                 name="text"
-                                placeholder="Enter text to generate tasks from"
+                                placeholder="Enter text to generate questions from"
                                 value={formData.text}
                                 onChange={handleInputChange}
                                 required
                             />
                         </div>
                         <div>
-                            <Label htmlFor="number">Number of Tasks</Label>
+                            <Label htmlFor="number">Number of Questions</Label>
                             <Input
                                 type="number"
                                 id="number"
                                 name="number"
-                                placeholder="Enter number of tasks"
+                                placeholder="Enter number of questions"
                                 value={formData.number}
                                 onChange={handleInputChange}
                                 required
@@ -127,37 +168,6 @@ export default function Component() {
                     </form>
                 </CardContent>
             </Card>
-
-            {items.length > 0 && (
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>Items</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Use</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {items.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.name}</TableCell>
-                                        <TableCell>
-                                            <Checkbox
-                                                checked={item.use}
-                                                onCheckedChange={() => handleCheckboxChange(item.id)}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            )}
 
             {generatedAssignment && (
                 <Card>
