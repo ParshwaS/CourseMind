@@ -1,20 +1,17 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import moment from 'moment';
+import { file } from "bun";
 
-// Define the base directory for uploads (e.g., the backend root folder)
-const BASE_DIR = path.join(__dirname, "../../uploads");
+const timestamp = moment().format('YYYYMMDDHHmmss');
+const filename = `uploaded_file_${timestamp}`;
 
 // Configure storage for Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
 
-    const courseId = req.body.courseId; // Extract courseId from the request body
-    const moduleId = req.body.moduleId; // Extract moduleId from the request body
-
-    
-
-    const uploadPath = path.join(BASE_DIR, courseId, moduleId); // Construct the full upload path
+    const uploadPath = path.join(path.join(__dirname, "../../uploads")); // Construct the full upload path
 
     // Ensure the directory exists
     if (!fs.existsSync(uploadPath)) {
@@ -22,13 +19,14 @@ const storage = multer.diskStorage({
     }
 
     cb(null, uploadPath); // Set the upload directory
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname); // Save the file with a timestamp and original name
-  },
+   },
+    filename: (req, file, cb) => {
+      cb(null, filename); // Save the file with a timestamp and original name
+    },
+
 });
 
-// Multer instance for file uploads
+// // Multer instance for file uploads
 const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB file size limit

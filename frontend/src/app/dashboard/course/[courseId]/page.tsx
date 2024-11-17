@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,17 +12,23 @@ import { PlusIcon, TrashIcon, UploadIcon, FileIcon } from 'lucide-react'
 import coursesService from "@/components/service/courses.service"
 import modulesService from "@/components/service/modules.service"
 import materialsService from '@/components/service/materials.service'
+import assignmentsService from '@/components/service/assignments.service'
+import quizsService from '@/components/service/quizs.service'
 
 type Module = {
   _id: string;
   name: string;
   courseId: string;
-  materialId: {id: number;name: string;type: string;}[];
-  quizId: { id: number; name: string }[];
-  assignmentId: { id: number; name: string }[];
+  materialId: {_id: string;
+              name: string;}[];
+  quizId: { _id: number;
+            name: string}[];
+  assignmentId: { _id: number;
+                  name: string}[];
 }
 
 export default function CoursePage() {
+  const router = useRouter();
   const { courseId } = useParams();
   const [modules, setModules] = useState<Module[]>([])
   const [courseName, setCourseName] = useState("")
@@ -52,12 +58,35 @@ export default function CoursePage() {
 
   // useEffect used to fetch all modules under the given course id
   useEffect(() => {
-    if (courseId) {
-      modulesService.getByCourseId(courseId as string).then((data) => {
-        console.log(data);
-        setModules(data);
-      });
-    }
+    const fetchModulesAndRelatedData = async () => {
+      if (courseId) {
+        try {
+          const moduleData = await modulesService.getByCourseId(courseId as string);
+
+          const modulesWithDetails = await Promise.all(
+            moduleData.map(async (module: Module) => {
+              const [materials, quizzes, assignments] = await Promise.all([
+                materialsService.getByModuleId(module._id),
+                quizsService.getByModuleId(module._id),
+                assignmentsService.getByModuleId(module._id),
+              ]);
+
+              return {
+                ...module,
+                materialId: materials || [],
+                quizId: quizzes || [],
+                assignmentId: assignments || [],
+              };
+            })
+          );
+          setModules(modulesWithDetails);
+        } catch (error) {
+          console.error("Error fetching modules and related data:", error);
+        }
+      }
+    };
+
+    fetchModulesAndRelatedData();
   }, [courseId]);
 
   // create new module
@@ -104,38 +133,58 @@ export default function CoursePage() {
   };
   
   const handleFileUpload = async (moduleId: string, uploadedFiles: FileList, courseId: string) => {
-    console.log("Received moduleId:", moduleId);
     const file = uploadedFiles[0];
     if (!file) return;
 
     try {
-      const uploadedFileData = await materialsService.uploadFile(file, courseId, moduleId);
+      const filesToUpload = Array.from(uploadedFiles).map(file => file);
 
+      const uploadedFileData = await Promise.all(
+
+        filesToUpload.map(async (file) => {
+
+          const response = await materialsService.uploadFile(file, courseId, moduleId);
+
+          return { ...response.data, _id: response.material._id, name: file.name };
+        })
+      );
+      
       console.log('File uploaded successfully:', uploadedFileData);
 
-      // setModules(prevModules => {
-      //   const newModules = [...prevModules];
-      //   const newFiles = Array.from(uploadedFiles).map(file => ({
-      //     id: Date.now() + Math.random(),
-      //     name: file.name,
-      //     type: file.type
-      //   }));
-      //   newModules[moduleIndex].materialId = [...newModules[moduleIndex].materialId, ...newFiles];
-      //   return newModules;
-      // });
-
-    }catch(error) {
-      console.log(error);
+      setModules((prevModules) => {
+        return prevModules.map((module) => {
+          if (module._id === moduleId) {
+            return {
+              ...module,
+              materialId: [...module.materialId, ...uploadedFileData],
+            };
+          }
+          return module;
+        });
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
     }
   }
 
-  const deleteFile = (moduleIndex: number, fileId: number) => {
-    setModules(prevModules => {
-      const newModules = [...prevModules];
-      newModules[moduleIndex].materialId = newModules[moduleIndex].materialId.filter(materialId => materialId.id !== fileId);
-      return newModules;
-    });
-  }
+  const deleteFile = async (moduleIndex: number, fileId: string) => {
+    try {
+      // Call the delete service to remove the file from the backend
+      await materialsService.delete(fileId);
+  
+      // Update the local state to remove the file from the UI
+      setModules((prevModules) => {
+        const newModules = [...prevModules];
+        newModules[moduleIndex].materialId = newModules[moduleIndex].materialId.filter(material => material._id !== fileId);
+        return newModules;
+      });
+  
+      console.log(`File with ID ${fileId} deleted successfully`);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
+  };
+  
 
   // const addQuiz = () => {
   //   if (newQuizTitle.trim() && activeModuleIndex !== null) {
@@ -156,7 +205,7 @@ export default function CoursePage() {
       setModules(prevModules => {
         const newModules = [...prevModules];
         newModules[activeModuleIndex].assignmentId.push({
-          id: Date.now(),
+          _id: Date.now(),
           name: ""
         });
         return newModules;
@@ -169,7 +218,7 @@ export default function CoursePage() {
   const deleteQuiz = (moduleIndex: number, quizId: number) => {
     setModules(prevModules => {
       const newModules = [...prevModules];
-      newModules[moduleIndex].quizId = newModules[moduleIndex].quizId.filter(quiz => quiz.id !== quizId);
+      newModules[moduleIndex].quizId = newModules[moduleIndex].quizId.filter(quiz => quiz._id !== quizId);
       return newModules;
     });
   }
@@ -177,7 +226,7 @@ export default function CoursePage() {
   const deleteAssignment = (moduleIndex: number, assignmentId: number) => {
     setModules(prevModules => {
       const newModules = [...prevModules];
-      newModules[moduleIndex].assignmentId = newModules[moduleIndex].assignmentId.filter(assignment => assignment.id !== assignmentId);
+      newModules[moduleIndex].assignmentId = newModules[moduleIndex].assignmentId.filter(assignment => assignment._id !== assignmentId);
       return newModules;
     });
   }
@@ -212,14 +261,14 @@ export default function CoursePage() {
           </div>
           <div className="mt-2">
             {module.materialId.map(file => (
-              <div key={file.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+              <div key={file._id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
                 <span className="flex items-center">
                   <FileIcon className="h-4 w-4 mr-2" />
                   {file.name}
                 </span>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">Open</Button>
-                  <Button variant="destructive" size="sm" onClick={() => deleteFile(moduleIndex, file.id)}>Delete</Button>
+                  <Button variant="destructive" size="sm" onClick={() => deleteFile(moduleIndex, file._id)}>Delete</Button>
                 </div>
               </div>
             ))}
@@ -229,7 +278,7 @@ export default function CoursePage() {
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Quizzes</h3>
           <Button 
-            onClick={() => {}} 
+            onClick={() => {router.push(`/dashboard/genQuiz?courseId=${courseId}&moduleId=${module._id}`);}} 
             size="sm"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
@@ -237,11 +286,11 @@ export default function CoursePage() {
           </Button>
           <div className="mt-2">
             {module.quizId.map(quiz => (
-              <div key={quiz.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+              <div key={quiz._id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
                 <span>Quiz Name</span>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">Open</Button>
-                  <Button variant="destructive" size="sm" onClick={() => deleteQuiz(moduleIndex, quiz.id)}>
+                  <Button variant="destructive" size="sm" onClick={() => deleteQuiz(moduleIndex, quiz._id)}>
                     Delete
                   </Button>
                 </div>
@@ -253,7 +302,7 @@ export default function CoursePage() {
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Assignments</h3>
           <Button 
-            onClick={() => {}} 
+            onClick={() => {router.push(`/dashboard/genAssignment?courseId=${courseId}&moduleId=${module._id}`)}} 
             size="sm"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
@@ -261,11 +310,11 @@ export default function CoursePage() {
           </Button>
           <div className="mt-2">
             {module.assignmentId.map(assignment => (
-              <div key={assignment.id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+              <div key={assignment._id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
                 <span>Assignment Name</span>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">Open</Button>
-                  <Button variant="destructive" size="sm" onClick={() => deleteAssignment(moduleIndex, assignment.id)}>
+                  <Button variant="destructive" size="sm" onClick={() => deleteAssignment(moduleIndex, assignment._id)}>
                     Delete
                   </Button>
                 </div>

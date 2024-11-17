@@ -3,16 +3,25 @@ import moduleModel from "../models/module.model";
 
 class ModuleController{
 
-    public async get(req: Request, res: Response, next: NextFunction) {
-		return moduleModel
-			.find({ userId: req.userToken?.userId })
-			.then((modules) => {
-				res.status(200).json(modules);
-			})
-			.catch((error) => {
-				return next(error);
-			});
-	}
+    public async getByCourseId(req: Request, res: Response, next: NextFunction) {
+        const { courseId } = req.query; // Extract courseId from the request parameters
+        if (!courseId) {
+            return res.status(400).json({ error: "Course ID is required" }); // Validate courseId
+        }
+    
+        return moduleModel
+            .find({ courseId: courseId }) // Query the database for modules matching the courseId
+            .then((modules) => {
+                if (!modules || modules.length === 0) {
+                    console.log("No modules found for the given Course ID");
+                    return res.status(200).json([]);
+                }
+                res.status(200).json(modules); // Respond with the retrieved modules
+            })
+            .catch((error) => {
+                return next(error); // Pass the error to the next middleware
+            });
+    }
 
 	public async getById(req: Request, res: Response, next: NextFunction) {
 		try {
@@ -54,9 +63,9 @@ class ModuleController{
 
 	public async delete(req: Request, res: Response, next: NextFunction) {
 		
-        const moduleId = req.params.id;
+        const courseId = req.params.id;
         return moduleModel
-            .findByIdAndDelete(moduleId)
+            .findByIdAndDelete(courseId)
             .then((deletedCourse) => {
                 if (!deletedCourse) {
                     return res.status(404).json({ message: "Module not found" });

@@ -15,18 +15,6 @@ const ModuleSchema = new Schema({
 		ref: "Course",
 		required: true,
 	},
-	materialId: [{
-		type: Schema.Types.ObjectId,
-		ref: "CourseMaterial",
-	}],
-	assignmentId: [{
-		type: Schema.Types.ObjectId,
-		ref: "Assignment",
-	}],
-	quizId: [{
-		type: Schema.Types.ObjectId,
-		ref: "Quiz",
-	}],
 	createdAt: {
 		type: Date,
 		default: Date.now,
