@@ -28,6 +28,7 @@ export default function genQuiz() {
     const moduleId = searchParams.get('moduleId');
 
     const [formData, setFormData] = useState({
+        files: [],
         text: '',
         number: '',
         subject: '',
@@ -55,9 +56,18 @@ export default function genQuiz() {
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
+
+        const fileIds = materials.filter(item => item.use).map(item => item._id);
+
         e.preventDefault()
         setIsLoading(true)
-        const mockQuiz = await generateService.generate(formData.text, formData.number, formData.subject, formData.level)
+        
+        const mockQuiz = await generateService.generate(fileIds as Array<string>,
+            formData.text,
+            formData.number as any,
+            formData.subject,
+            formData.level
+        )
         setGeneratedQuiz(mockQuiz)
         setIsLoading(false)
     }

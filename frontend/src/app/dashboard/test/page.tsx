@@ -19,15 +19,12 @@ type Module = {
   _id: string;
   name: string;
   courseId: string;
+  materialId: {_id: string;
+              name: string;}[];
   quizId: { _id: number;
             name: string}[];
   assignmentId: { _id: number;
                   name: string}[];
-}
-
-type Material = {
-  _id: string;
-  name: string
 }
 
 export default function CoursePage() {
@@ -41,7 +38,7 @@ export default function CoursePage() {
   const [newAssignmentTitle, setNewAssignmentTitle] = useState("")
   const [activeModuleIndex, setActiveModuleIndex] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [uploadedFiles, setUploadedFiles] = useState<Material[]>([])
+  const [uploadedFiles, setUploadedFiles] = useState<{name: string, moduleId: string}[]>([])
 
   // useEffect used to fetch course name using course id
   useEffect(() => {
@@ -58,7 +55,7 @@ export default function CoursePage() {
       }
     };
     fetchCourseName();
-  }, []);
+  }, [courseId]);
 
   // useEffect used to fetch all modules under the given course id
   useEffect(() => {
@@ -69,26 +66,15 @@ export default function CoursePage() {
 
           const modulesWithDetails = await Promise.all(
             moduleData.map(async (module: Module) => {
-              const [quizzes, assignments] = await Promise.all([
+              const [materials, quizzes, assignments] = await Promise.all([
+                materialsService.getByModuleId(module._id),
                 quizsService.getByModuleId(module._id),
-                assignmentsService.getByModuleId(module._id)
+                assignmentsService.getByModuleId(module._id),
               ]);
-
-
-
-          // const materials = 
-
-              // setUploadedFiles((prevUploadedFiles) => [
-              //   ...prevUploadedFiles,
-              //   ...materials.map((material) => ({
-
-              //     name: material.name,
-              //     moduleId: module._id,
-              //   })),
-              // ]);
 
               return {
                 ...module,
+                materialId: materials || [],
                 quizId: quizzes || [],
                 assignmentId: assignments || [],
               };
@@ -102,7 +88,7 @@ export default function CoursePage() {
     };
 
     fetchModulesAndRelatedData();
-  }, []);
+  }, [courseId]);
 
   // create new module
   const addModule = async (courseId: string) => {
@@ -116,6 +102,7 @@ export default function CoursePage() {
             _id: newModule._id,
             name: newModule.name,
             courseId: courseId,
+            materialId: [],
             quizId: [],
             assignmentId: []
           }
@@ -146,19 +133,19 @@ export default function CoursePage() {
     }
   };
   
-  const handleFileUpload = async (moduleId: string, filesToUpload: FileList, courseId: string) => {
+  const handleFileUpload = async (moduleId: string, uploadedFiles: FileList, courseId: string) => {
 
-    const file = filesToUpload[0];
+    const file = uploadedFiles[0];
     if (!file) return;
 
     try {
-      const filesToUpload = Array.from(filesToUpload).map(file => file);
+      const filesToUpload = Array.from(uploadedFiles).map(file => file);
 
       const uploadedFileData = await Promise.all(
 
         filesToUpload.map(async (file) => {
 
-          const response = await materialsService.uploadFile(file, courseId);
+          const response = await materialsService.uploadFile(file, courseId, moduleId);
 
           return { ...response.data, _id: response.material._id, name: file.name };
         })
@@ -166,36 +153,70 @@ export default function CoursePage() {
       
       console.log('File uploaded successfully:', uploadedFileData);
 
-      const uploadedFiles = await materialsService.getByCourseId(courseId);
-
-      setUploadedFiles((prevUploadedFiles) => [
-        ...prevUploadedFiles,
-        ...uploadedFileData.map((file) => ({
-          _id: file._id,
-          name: file.name
-        })),
-      ]);
+      setModules((prevModules) => {
+        return prevModules.map((module) => {
+          if (module._id === moduleId) {
+            return {
+              ...module,
+              materialId: [...module.materialId, ...uploadedFileData],
+            };
+          }
+          return module;
+        });
+      });
       
     } catch (error) {
       console.error("Error uploading file:", error);
     }
   }
 
-  const deleteFile = async (fileId: string) => {
+  const deleteFile = async (moduleIndex: number, fileId: string) => {
     try {
       // Call the delete service to remove the file from the backend
       await materialsService.delete(fileId);
   
       // Update the local state to remove the file from the UI
-      setUploadedFiles((prevUploadedFiles) =>
-        prevUploadedFiles.filter((uploadedFile) => uploadedFile.name !== fileId)
-      );
+      setModules((prevModules) => {
+        const newModules = [...prevModules];
+        newModules[moduleIndex].materialId = newModules[moduleIndex].materialId.filter(material => material._id !== fileId);
+        return newModules;
+      });
   
       console.log(`File with ID ${fileId} deleted successfully`);
     } catch (error) {
       console.error('Error deleting file:', error);
     }
   };
+  
+
+  // const addQuiz = () => {
+  //   if (newQuizTitle.trim() && activeModuleIndex !== null) {
+  //     setModules(prevModules => {
+  //       const newModules = [...prevModules];
+  //       newModules[activeModuleIndex].quizId.push({
+  //         id: Date.now(),
+  //       });
+  //       return newModules;
+  //     });
+  //     setNewQuizTitle("");
+  //     setIsNewQuizDialogOpen(false);
+  //   }
+  // }
+
+  const addAssignment = () => {
+    if (newAssignmentTitle.trim() && activeModuleIndex !== null) {
+      setModules(prevModules => {
+        const newModules = [...prevModules];
+        newModules[activeModuleIndex].assignmentId.push({
+          _id: Date.now(),
+          name: ""
+        });
+        return newModules;
+      });
+      setNewAssignmentTitle("");
+      setIsNewAssignmentDialogOpen(false);
+    }
+  }
 
   const deleteQuiz = (moduleIndex: number, quizId: number) => {
     setModules(prevModules => {
@@ -299,7 +320,7 @@ export default function CoursePage() {
                     <UploadIcon className="h-4 w-4 mr-2" />
                     Upload File
                   </Button>
-                  {/* <select 
+                  <select 
                     className="border rounded p-2"
                     onChange={(e) => setActiveModuleIndex(Number(e.target.value))}
                   >
@@ -307,7 +328,7 @@ export default function CoursePage() {
                     {modules.map((module, index) => (
                       <option key={module._id} value={index}>{module.name}</option>
                     ))}
-                  </select> */}
+                  </select>
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -338,7 +359,7 @@ export default function CoursePage() {
                         onClick={() => {
                           const moduleIndex = modules.findIndex(m => m._id === file.moduleId);
                           if (moduleIndex !== -1) {
-                            deleteFile(file.name);
+                            deleteFile(moduleIndex, file.name);
                           }
                         }}
                       >
@@ -370,7 +391,7 @@ export default function CoursePage() {
         </DialogContent>
       </Dialog>
 
-      {/* <Dialog open={isNewAssignmentDialogOpen} onOpenChange={setIsNewAssignmentDialogOpen}>
+      <Dialog open={isNewAssignmentDialogOpen} onOpenChange={setIsNewAssignmentDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Assignment</DialogTitle>
@@ -382,10 +403,10 @@ export default function CoursePage() {
               value={newAssignmentTitle}
               onChange={(e) => setNewAssignmentTitle(e.target.value)}
             />
-            <Button onClick={() => {router.push(`/dashboard/genAssignment?courseId=${courseId}&moduleId=${module._id}`);}}>Create Assignment</Button>
+            <Button onClick={addAssignment}>Create Assignment</Button>
           </div>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
     </div>
   )
 }

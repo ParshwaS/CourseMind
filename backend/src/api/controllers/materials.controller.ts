@@ -3,6 +3,26 @@ import materialModel from "../models/material.model";
 
 class MaterialController {
 
+  public async getByCourseId(req: Request, res: Response, next: NextFunction) {
+    const { courseId } = req.query; // Extract moduleId from the request parameters
+    if (!courseId) {
+        return res.status(400).json({ error: "Course ID is required", courseId}); // Validate moduleId
+    }
+
+    return materialModel
+        .find({ courseId: courseId }) // Query the database for materials matching the moduleId
+        .then((materials) => {
+            if (!materials || materials.length === 0) {
+              console.log("No material found for the given module ID")
+              return res.status(200).json([]);
+            }
+            res.status(200).json(materials); // Respond with the retrieved materials
+        })
+        .catch((error) => {
+            return next(error); // Pass the error to the next middleware
+        });
+  }
+
   public async getByModuleId(req: Request, res: Response, next: NextFunction) {
     const { moduleId } = req.query; // Extract moduleId from the request parameters
     if (!moduleId) {
@@ -30,14 +50,13 @@ class MaterialController {
       }
 
       const { originalname, mimetype, size, path: filePath } = req.file;
-      const { moduleId, courseId } = req.body;
+      const { courseId } = req.body;
 
       const newMaterial = await materialModel.create({
         name: originalname,
         filePath: filePath,
         mimeType: mimetype,
         fileSize: size,
-        moduleId: moduleId,
         courseId: courseId,
         userId: req.userToken?.userId,
       });
