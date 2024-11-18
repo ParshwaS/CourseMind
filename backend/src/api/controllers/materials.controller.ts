@@ -4,22 +4,22 @@ import materialModel from "../models/material.model";
 class MaterialController {
 
   public async getByCourseId(req: Request, res: Response, next: NextFunction) {
-    const { courseId } = req.query; // Extract moduleId from the request parameters
+    const { courseId } = req.query;
     if (!courseId) {
-        return res.status(400).json({ error: "Course ID is required", courseId}); // Validate moduleId
+        return res.status(400).json({ error: "Course ID is required", courseId});
     }
 
     return materialModel
-        .find({ courseId: courseId }) // Query the database for materials matching the moduleId
+        .find({ courseId: courseId })
         .then((materials) => {
             if (!materials || materials.length === 0) {
               console.log("No material found for the given module ID")
               return res.status(200).json([]);
             }
-            res.status(200).json(materials); // Respond with the retrieved materials
+            res.status(200).json(materials);
         })
         .catch((error) => {
-            return next(error); // Pass the error to the next middleware
+            return next(error);
         });
   }
 

@@ -42,7 +42,7 @@ export default function genQuiz() {
     useEffect(() => {
         // fetching material based on a course and module
         const fetchItems = async () => {
-            const response = await materialsService.getByModuleId(moduleId as string);
+            const response = await materialsService.getByCourseId(courseId as string);
             const data = await response
             setMaterials(data);
         }
@@ -62,13 +62,13 @@ export default function genQuiz() {
         e.preventDefault()
         setIsLoading(true)
         
-        const mockQuiz = await generateService.generate(fileIds as Array<string>,
+        const quiz = await generateService.generate(fileIds as Array<string>,
             formData.text,
             formData.number as any,
             formData.subject,
             formData.level
         )
-        setGeneratedQuiz(mockQuiz)
+        setGeneratedQuiz(quiz)
         setIsLoading(false)
     }
 

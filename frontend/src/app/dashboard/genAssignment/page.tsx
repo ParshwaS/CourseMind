@@ -41,7 +41,7 @@ export default function genAssignment() {
     useEffect(() => {
         // fetching material based on a course and module
         const fetchItems = async () => {
-            const response = await materialsService.getByModuleId(moduleId as string);
+            const response = await materialsService.getByCourseId(courseId as string);
             const data = await response
             setMaterials(data);
         }
@@ -55,10 +55,18 @@ export default function genAssignment() {
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
+        const fileIds = materials.filter(item => item.use).map(item => item._id);
+
         e.preventDefault()
         setIsLoading(true)
-        const mockAssignment = await generateService.generate(formData.text, formData.number, formData.subject, formData.level)
-        setGeneratedAssignment(mockAssignment)
+        
+        const assignment = await generateService.generate(fileIds as Array<string>,
+            formData.text,
+            formData.number as any,
+            formData.subject,
+            formData.level
+        )
+        setGeneratedAssignment(assignment)
         setIsLoading(false)
     }
 

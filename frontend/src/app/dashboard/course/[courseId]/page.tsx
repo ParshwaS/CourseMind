@@ -73,20 +73,6 @@ export default function CoursePage() {
                 quizsService.getByModuleId(module._id),
                 assignmentsService.getByModuleId(module._id)
               ]);
-
-
-
-          // const materials = 
-
-              // setUploadedFiles((prevUploadedFiles) => [
-              //   ...prevUploadedFiles,
-              //   ...materials.map((material) => ({
-
-              //     name: material.name,
-              //     moduleId: module._id,
-              //   })),
-              // ]);
-
               return {
                 ...module,
                 quizId: quizzes || [],
@@ -94,7 +80,15 @@ export default function CoursePage() {
               };
             })
           );
+
           setModules(modulesWithDetails);
+
+          const uploadedFiles = await materialsService.getByCourseId(courseId as string);
+
+          if (uploadedFiles) {
+            setUploadedFiles(uploadedFiles);
+          }
+
         } catch (error) {
           console.error("Error fetching modules and related data:", error);
         }
@@ -146,27 +140,23 @@ export default function CoursePage() {
     }
   };
   
-  const handleFileUpload = async (moduleId: string, filesToUpload: FileList, courseId: string) => {
+  const handleFileUpload = async (filesToUpload: FileList, courseId: string) => {
 
     const file = filesToUpload[0];
     if (!file) return;
 
+    
+
     try {
-      const filesToUpload = Array.from(filesToUpload).map(file => file);
+      const files = Array.from(filesToUpload).map(file => file);
 
       const uploadedFileData = await Promise.all(
-
-        filesToUpload.map(async (file) => {
-
+        files.map(async (file) => {
           const response = await materialsService.uploadFile(file, courseId);
-
           return { ...response.data, _id: response.material._id, name: file.name };
-        })
-      );
+        }));
       
       console.log('File uploaded successfully:', uploadedFileData);
-
-      const uploadedFiles = await materialsService.getByCourseId(courseId);
 
       setUploadedFiles((prevUploadedFiles) => [
         ...prevUploadedFiles,
@@ -188,7 +178,7 @@ export default function CoursePage() {
   
       // Update the local state to remove the file from the UI
       setUploadedFiles((prevUploadedFiles) =>
-        prevUploadedFiles.filter((uploadedFile) => uploadedFile.name !== fileId)
+        prevUploadedFiles.filter((uploadedFile) => uploadedFile._id !== fileId)
       );
   
       console.log(`File with ID ${fileId} deleted successfully`);
@@ -299,22 +289,13 @@ export default function CoursePage() {
                     <UploadIcon className="h-4 w-4 mr-2" />
                     Upload File
                   </Button>
-                  {/* <select 
-                    className="border rounded p-2"
-                    onChange={(e) => setActiveModuleIndex(Number(e.target.value))}
-                  >
-                    <option value="">Select Module</option>
-                    {modules.map((module, index) => (
-                      <option key={module._id} value={index}>{module.name}</option>
-                    ))}
-                  </select> */}
                   <input
                     type="file"
                     ref={fileInputRef}
                     className="hidden"
                     onChange={(e) => {
-                      if (e.target.files && activeModuleIndex !== null) {
-                        handleFileUpload(modules[activeModuleIndex]._id, e.target.files, courseId as string)
+                      if (e.target.files) {
+                        handleFileUpload(e.target.files, courseId as string)
                       }
                     }}
                     multiple
@@ -324,8 +305,8 @@ export default function CoursePage() {
               </div>
               <div className="mt-4">
                 <h3 className="text-lg font-semibold mb-2">Uploaded Files</h3>
-                {uploadedFiles.map((file, index) => (
-                  <div key={index} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
+                {(uploadedFiles || []).map((file) => (
+                  <div key={file._id} className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded">
                     <span className="flex items-center">
                       <FileIcon className="h-4 w-4 mr-2" />
                       {file.name}
@@ -335,13 +316,7 @@ export default function CoursePage() {
                       <Button 
                         variant="destructive" 
                         size="sm" 
-                        onClick={() => {
-                          const moduleIndex = modules.findIndex(m => m._id === file.moduleId);
-                          if (moduleIndex !== -1) {
-                            deleteFile(file.name);
-                          }
-                        }}
-                      >
+                        onClick={() => { deleteFile(file._id); }}>
                         Delete
                       </Button>
                     </div>
@@ -369,23 +344,6 @@ export default function CoursePage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* <Dialog open={isNewAssignmentDialogOpen} onOpenChange={setIsNewAssignmentDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Assignment</DialogTitle>
-          </DialogHeader>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="new-assignment">Assignment Title</Label>
-            <Input
-              id="new-assignment"
-              value={newAssignmentTitle}
-              onChange={(e) => setNewAssignmentTitle(e.target.value)}
-            />
-            <Button onClick={() => {router.push(`/dashboard/genAssignment?courseId=${courseId}&moduleId=${module._id}`);}}>Create Assignment</Button>
-          </div>
-        </DialogContent>
-      </Dialog> */}
     </div>
   )
 }

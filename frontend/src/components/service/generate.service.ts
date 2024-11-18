@@ -5,6 +5,10 @@ const API_URL = "http://localhost:3001/api/generate/";
 class GenerateService {
 	async generate(fileIds: Array<string> = [], content: any, number: number, subject: string, level: string) {
 
+		console.log(fileIds);
+
+		console.log(content, number, subject, level);
+
 		// if (localStorage.getItem("user") === null) {
 		// 	return null;
 		// }

@@ -6,6 +6,7 @@ import materialsController from "../controllers/materials.controller";
 const router = Router();
 
 router.post("/upload", authMiddleware, upload.single("file"), materialsController.upload);
+router.get("/getByCourseId", materialsController.getByCourseId);
 router.get("/getByModuleId", materialsController.getByModuleId);
 router.route("/:fileId").delete(authMiddleware, materialsController.delete)
 
