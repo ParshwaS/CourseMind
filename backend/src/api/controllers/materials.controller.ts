@@ -3,6 +3,26 @@ import materialModel from "../models/material.model";
 
 class MaterialController {
 
+  public async getById(req: Request, res: Response, next: NextFunction) {
+    const { _id } = req.query;
+    if (!_id) {
+        return res.status(400).json({ error: "Material ID is required", _id});
+    }
+
+    return materialModel
+        .findById(_id)
+        .then((material) => {
+            if (!material) {
+              console.log("No material found for the given ID")
+              return res.status(200).json([]);
+            }
+            res.status(200).json(material);
+        })
+        .catch((error) => {
+            return next(error);
+        });
+  }
+
   public async getByCourseId(req: Request, res: Response, next: NextFunction) {
     const { courseId } = req.query;
     if (!courseId) {

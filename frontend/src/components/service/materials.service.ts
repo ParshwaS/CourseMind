@@ -4,6 +4,26 @@ const API_URL = "http://localhost:3000/api/materials/";
 
 class MaterialService {
 
+  async getById(_id: string) {
+
+    if (localStorage.getItem("user") === null) { return null; }
+    const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
+
+    try {
+
+      const response = await axios.get(`${API_URL}getById?_id=${_id}`,
+        {headers: { Authorization: `Bearer ${token}`} }
+      );
+
+      return response.data;
+
+    } catch(error) {
+      console.error("Error fetching Materials data:", error);
+      return null;
+    }
+  }
+    
+
   async getByCourseId(courseId: string) {
 
     if (localStorage.getItem("user") === null) { return null; }

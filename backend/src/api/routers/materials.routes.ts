@@ -5,6 +5,7 @@ import materialsController from "../controllers/materials.controller";
 
 const router = Router();
 
+router.get("/getById", materialsController.getById);
 router.post("/upload", authMiddleware, upload.single("file"), materialsController.upload);
 router.get("/getByCourseId", materialsController.getByCourseId);
 router.get("/getByModuleId", materialsController.getByModuleId);
