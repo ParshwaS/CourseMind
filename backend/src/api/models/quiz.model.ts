@@ -6,13 +6,9 @@ const QuizSchema = new Schema({
 		required: true,
 		trim: true,
 	},
-	description: {
+	filepath: {
 		type: String,
-		trim: true,
-	},
-	content: {
-		type: String,
-		trim: true,
+		required: true,
 	},
 	link: {
 		type: String,

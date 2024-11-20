@@ -19,6 +19,26 @@ class QuizService {
           return null;
         }
       };
+
+    async saveQuiz (generatedQuiz: JSON, topic: string, level: string, moduleId: string) {
+
+        if (localStorage.getItem("user") === null) { return null; }
+        const token = JSON.parse(localStorage.getItem("user") as string).accessToken;      
+
+        try {
+            const response = await axios.post(`${API_URL}saveQuiz?moduleId=${moduleId}`, {generatedQuiz, topic, level},
+              {headers: { Authorization: `Bearer ${token}`},}
+            );
+
+            return response.data
+
+
+        } catch(error) {
+          console.error("Error saving Quiz:", error);
+          return null;
+        }
+    }
+    
 }
 
 export default new QuizService();

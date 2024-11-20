@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import generateService from '@/components/service/generate.service'
 import materialsService from '@/components/service/materials.service';
+import quizsService from '@/components/service/quizs.service';
 
 type Material = {_id: string;
     name: string;
@@ -127,9 +128,12 @@ export default function genQuiz() {
         ))
     }
 
-    const saveQuiz = (generatedQuiz: string, topic: string, level: string) => {
+    const saveQuiz = (generatedQuiz: JSON, topic: string, level: string, moduleId: string) => {
 
-        
+        const response = quizsService.saveQuiz(generatedQuiz, topic, level, moduleId)
+
+        console.log(response);
+
     }
 
     return (
@@ -256,7 +260,7 @@ export default function genQuiz() {
                     </div>
                 </CardContent>
                 <CardContent className="flex justify-start">
-                    <Button onClick={() => saveQuiz(generatedQuiz, formData.subject, formData.level)}>Export</Button>
+                    <Button onClick={() => saveQuiz(generatedQuiz, formData.subject, formData.level, moduleId as string)}>Export</Button>
                 </CardContent>
             </Card>
         )}
