@@ -1,9 +1,10 @@
 import { Router } from "express";
-import quizzesController from "../controllers/quizzes.controller"
+import quizzesController from "../controllers/quizzes.controller";
+import authMiddleware from "@/lib/middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/getByModuleId", quizzesController.getByModuleId);
-router.post("/saveQuiz", quizzesController.saveQuiz);
+router.get("/getByModuleId", authMiddleware, quizzesController.getByModuleId);
+router.post("/saveQuiz", authMiddleware, quizzesController.saveQuiz);
 
 export default router;

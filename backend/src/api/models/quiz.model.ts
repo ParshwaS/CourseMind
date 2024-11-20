@@ -10,10 +10,6 @@ const QuizSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	link: {
-		type: String,
-		trim: true,
-	},
 	moduleId: {
 		type: Schema.Types.ObjectId,
 		ref: "Module",

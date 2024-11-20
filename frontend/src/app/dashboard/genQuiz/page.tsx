@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'; 
 import { Button } from "@/components/ui/button"
@@ -23,6 +24,8 @@ type Material = {_id: string;
     use: boolean
   }
 export default function genQuiz() {
+
+    const router = useRouter();
 
     const searchParams = useSearchParams();
     const courseId = searchParams.get('courseId');
@@ -132,7 +135,8 @@ export default function genQuiz() {
 
         const response = quizsService.saveQuiz(generatedQuiz, topic, level, moduleId)
 
-        console.log(response);
+        router.push(`/dashboard/course/${courseId}`);
+
 
     }
 

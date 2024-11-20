@@ -108,7 +108,7 @@ class QuizController {
           return res.status(201).json(savedQuiz);
 
         } catch (error) {
-          return next(error);
+          return console.error("Error in process:", error);
         }
     }
 }
