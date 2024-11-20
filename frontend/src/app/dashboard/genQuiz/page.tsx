@@ -260,26 +260,6 @@ export default function genQuiz() {
                 </CardContent>
             </Card>
         )}
-
-            
-
-            {/* {generatedQuiz && (
-                <Card ref={quizRef}>
-                    <CardHeader>
-                        <CardTitle>Generated Quiz</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
-                            {JSON.stringify(generatedQuiz, null, 2)}
-                        </pre>
-                    </CardContent>
-                    <CardContent className="flex justify-start">
-                        <Button onClick={() => console.log("Button clicked!")}>
-                        Export
-                        </Button>
-                    </CardContent>
-                </Card>
-            )} */}
         </div>
     )
 }
