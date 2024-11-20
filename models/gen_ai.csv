@@ -1,6 +1,0 @@
-MCQ,Choices,Correct
-What does the Unified Modeling Language (UML) primarily help software developers to do?,a: To create and maintain source code in a programming language | b: To visualize and construct new systems through diagrams | c: To debug running applications during development | d: To manage project schedules and deadlines,b
-What is the main reason UML diagrams are used in software engineering?,a: To generate executable code from visual diagrams | b: To improve communication and understanding among team members | c: To replace traditional documentation methods entirely | d: To automate testing processes during development,b
-Which of the following is NOT a type of UML diagram?,a: Activity Diagram | b: Sequence Diagram | c: Flowchart | d: Deployment Diagram,c
-What is the purpose of UML packages?,a: To group related elements for better organization and clarity in diagrams | b: To define specific attributes for individual objects within a class | c: To serve as placeholders for future code changes | d: To provide detailed comments on each diagram element,a
-What type of line is used in UML diagrams to show a parent-child relationship between elements?,a: Dotted Line | b: Solid Line with a Hollow Arrowhead | c: Double Dashed Line | d: Undirected Line,b

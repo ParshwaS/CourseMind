@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'; 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,6 +26,7 @@ export default function genQuiz() {
     const searchParams = useSearchParams();
     const courseId = searchParams.get('courseId');
     const moduleId = searchParams.get('moduleId');
+    const quizRef = useRef<HTMLDivElement | null>(null);
 
     const [formData, setFormData] = useState({
         files: [],
@@ -50,6 +51,14 @@ export default function genQuiz() {
         fetchItems()
     }, [])
 
+    useEffect(() => {
+
+        if (generatedQuiz && quizRef.current) {
+            quizRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+
+    }, [generatedQuiz])
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
@@ -59,23 +68,68 @@ export default function genQuiz() {
 
         const fileIds = materials.filter(item => item.use).map(item => item._id);
 
-        e.preventDefault()
-        setIsLoading(true)
-        
-        const quiz = await generateService.generate(fileIds as Array<string>,
-            formData.text,
-            formData.number as any,
-            formData.subject,
-            formData.level
-        )
-        setGeneratedQuiz(quiz)
-        setIsLoading(false)
+        try {
+
+            e.preventDefault()
+            setIsLoading(true)
+            
+            // const quiz = await generateService.generate(fileIds as Array<string>,
+            //     formData.text,
+            //     formData.number as any,
+            //     formData.subject,
+            //     formData.level
+            // )
+            // setGeneratedQuiz(quiz)
+            setGeneratedQuiz({
+                "1": {
+                  "mcq": "What does the CourseMind system help professors do?",
+                  "options": {
+                    "a": "Organize study materials for students",
+                    "b": "Plan courses, quizzes, and assignments easily",
+                    "c": "Mark attendance for students",
+                    "d": "Create forums for discussions"
+                  },
+                  "correct": "b"
+                },
+                "2": {
+                  "mcq": "Which type of database does CourseMind use to store information?",
+                  "options": {
+                    "a": "A database that uses tables like MySQL",
+                    "b": "A relational database like PostgreSQL",
+                    "c": "A flexible database like MongoDB",
+                    "d": "A lightweight database like SQLite"
+                  },
+                  "correct": "c"
+                },
+                "3": {
+                  "mcq": "How does CourseMind handle user actions like creating a course?",
+                  "options": {
+                    "a": "By processing everything in real-time",
+                    "b": "By completing tasks in batches",
+                    "c": "By waiting for user actions to start tasks",
+                    "d": "By running all tasks in a single sequence"
+                  },
+                  "correct": "c"
+                }
+              }
+              )
+            setIsLoading(false)
+        } catch (error) {
+
+            console.error("error generating Quiz: ", error);
+            setIsLoading(false)
+        }
     }
 
     const handleCheckboxChange = (id: string) => {
         setMaterials(materials.map(item => 
             item._id === id ? { ...item, use: !item.use } : item
         ))
+    }
+
+    const saveQuiz = (generatedQuiz: string, topic: string, level: string) => {
+
+        
     }
 
     return (
@@ -180,7 +234,37 @@ export default function genQuiz() {
             </Card>
 
             {generatedQuiz && (
-                <Card>
+            <Card ref={quizRef}>
+                <CardHeader>
+                    <CardTitle>Generated Quiz</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="overflow-y-auto max-h-96 p-4 border rounded-md bg-gray-50">
+                        {Object.entries(generatedQuiz).map(([key, value]: any) => (
+                            <div key={key} className="mb-4">
+                                <p className="font-semibold">{`Q${key}) ${value.mcq}`}</p>
+                                <div className="pl-4 space-y-1">
+                                    {Object.entries(value.options).map(([optionKey, optionValue]: any) => (
+                                        <p key={optionKey}>
+                                            <span className="font-medium">{optionKey})</span> {optionValue}
+                                        </p>
+                                    ))}
+                                </div>
+                                <p className="mt-2 text-sm font-semibold text-green-600">{`Ans: ${value.correct}`}</p>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+                <CardContent className="flex justify-start">
+                    <Button onClick={() => saveQuiz(generatedQuiz, formData.subject, formData.level)}>Export</Button>
+                </CardContent>
+            </Card>
+        )}
+
+            
+
+            {/* {generatedQuiz && (
+                <Card ref={quizRef}>
                     <CardHeader>
                         <CardTitle>Generated Quiz</CardTitle>
                     </CardHeader>
@@ -189,8 +273,13 @@ export default function genQuiz() {
                             {JSON.stringify(generatedQuiz, null, 2)}
                         </pre>
                     </CardContent>
+                    <CardContent className="flex justify-start">
+                        <Button onClick={() => console.log("Button clicked!")}>
+                        Export
+                        </Button>
+                    </CardContent>
                 </Card>
-            )}
+            )} */}
         </div>
     )
 }

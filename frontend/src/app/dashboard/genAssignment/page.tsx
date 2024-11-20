@@ -28,6 +28,7 @@ export default function genAssignment() {
     const moduleId = searchParams.get('moduleId');
 
     const [formData, setFormData] = useState({
+        files: [],
         text: '',
         number: '',
         subject: '',
@@ -55,6 +56,7 @@ export default function genAssignment() {
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
+
         const fileIds = materials.filter(item => item.use).map(item => item._id);
 
         e.preventDefault()
