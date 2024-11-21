@@ -10,23 +10,11 @@ const ModuleSchema = new Schema({
 		type: String,
 		trim: true,
 	},
-	course: {
+	courseId: {
 		type: Schema.Types.ObjectId,
 		ref: "Course",
 		required: true,
 	},
-	courseMaterials: [{
-		type: Schema.Types.ObjectId,
-		ref: "CourseMaterial",
-	}],
-	assignments: [{
-		type: Schema.Types.ObjectId,
-		ref: "Assignment",
-	}],
-	quizzes: [{
-		type: Schema.Types.ObjectId,
-		ref: "Quiz",
-	}],
 	createdAt: {
 		type: Date,
 		default: Date.now,

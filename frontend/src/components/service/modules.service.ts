@@ -1,22 +1,26 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/courses/modules/";
+const API_URL = "http://localhost:3000/api/modules/";
 
 class ModuleService {
-	async get() {
+
+	async getByCourseId(courseId: string) {
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
 		const token = JSON.parse(
 			localStorage.getItem("user") as string
 		).accessToken;
-		return axios
-			.get(API_URL + "get", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			.then((response) => {
-				return response.data;
-			});
+		
+		try {
+			const response = await axios.get(`${API_URL}getByCourseId?courseId=${courseId}`,
+				{headers: { Authorization: `Bearer ${token}`},}
+			);
+		  return response.data;
+		} catch (error) {
+		  console.error("Error fetching Modules data:", error);
+		  return null;
+		}
 	}
 
 	async getById(id: any) {
@@ -39,20 +43,11 @@ class ModuleService {
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
-		const token = JSON.parse(
-			localStorage.getItem("user") as string
-		).accessToken;
-		return axios
-			.post(
-				API_URL + "create",
-				{ name, courseId },
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then((response) => {
-				return response.data;
-			});
+		const token = JSON.parse(localStorage.getItem("user") as string).accessToken;
+
+		const createdModule = await axios.post(API_URL + "create", { name, courseId }, { headers: { Authorization: `Bearer ${token}` },});
+		
+		return createdModule.data;
 	}
 
 	async delete(id: string) {

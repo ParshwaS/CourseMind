@@ -109,7 +109,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/lib/middlewares/multer.middleware.ts"  ],
   "exclude": [
     "src/__tests__/**/*",
   ]

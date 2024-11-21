@@ -6,19 +6,11 @@ const QuizSchema = new Schema({
 		required: true,
 		trim: true,
 	},
-	description: {
+	filepath: {
 		type: String,
-		trim: true,
+		required: true,
 	},
-	content: {
-		type: String,
-		trim: true,
-	},
-	link: {
-		type: String,
-		trim: true,
-	},
-	module: {
+	moduleId: {
 		type: Schema.Types.ObjectId,
 		ref: "Module",
 		required: true,

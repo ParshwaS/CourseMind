@@ -1,9 +1,30 @@
 import axios from "axios";
+import materialsService from "./materials.service";
 
-const API_URL = "http://localhost:3001/api/genQuiz/";
+const API_URL = "http://localhost:3000/api/generate/";
 
 class GenerateService {
-	async generate(content: any, number: any, subject: any, level: any) {
+
+	async generate(fileIds: Array<string> = [], content: any, number: number, subject: string, level: string) {
+
+		// Parase a document and generate clean text
+		const filePaths: Array<string> = [];
+
+		for (const fileId of fileIds) {
+
+			try {
+
+				const file = await materialsService.getById(fileId);
+
+				//parse and clean file content
+
+				filePaths.push(file.filePath);
+
+			} catch(error) {
+				console.error(`Error processing file with ID ${fileId}:`, error);
+			}
+		}
+
 		if (localStorage.getItem("user") === null) {
 			return null;
 		}
@@ -12,6 +33,7 @@ class GenerateService {
 		).accessToken;
 		return axios
 			.post(API_URL + "genQuiz", {
+				"filepaths": filePaths,
 				"text": content,
 				"number": number,
 				"subject": subject,

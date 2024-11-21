@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@radix-ui/react-checkbox": "^1.1.2",
+    "@radix-ui/react-select": "^2.1.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

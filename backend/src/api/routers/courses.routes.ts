@@ -7,6 +7,7 @@ const router = Router();
 router.get("/get", authMiddleware, coursesController.get);
 router.get("/getById", authMiddleware, coursesController.getById);
 router.post("/create", authMiddleware, coursesController.create);
-router.route("/:id").delete(authMiddleware, coursesController.delete)
+router.route("/:id").delete(authMiddleware, coursesController.delete);
+router.patch("/updateModuleId:courseId", authMiddleware, coursesController.updateModuleId);
 
 export default router;

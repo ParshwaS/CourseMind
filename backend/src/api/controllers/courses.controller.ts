@@ -38,12 +38,38 @@ class CourseController {
 		return course
 			.save()
 			.then((course) => {
-				res.status(201).json(course);
+				res.status(200).json(course);
 			})
 			.catch((error) => {
 				return next(error);
 			});
 	}
+
+	public async updateModuleId(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { courseId } = req.params;;
+        	const { moduleId } = req.body;
+
+			console.log(`Course ID: ${courseId}`);
+
+			if (!moduleId) {
+				return res.status(400).json({ message: "Module ID is required" });
+			}
+
+			const updatedCourse = await courseModel.findOneAndUpdate(
+				{ _id: courseId },
+				{ $push: { moduleIds: moduleId } },
+				{ new: true }
+			);
+
+			if (!updatedCourse) {
+				return res.status(404).json({ message: "Course not found" });
+			}
+			res.status(200).json(updatedCourse);
+        } catch(error) {
+            return next(error);
+        }
+    }
 
 	public async delete(req: Request, res: Response, next: NextFunction) {
 		
