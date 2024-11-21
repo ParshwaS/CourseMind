@@ -239,8 +239,8 @@ export default function CoursePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div className="space-y-6">
+      <div className="flex flex-col md:flex-row gap-6">
+      <div className="w-full md:w-3/5 space-y-6">
           {modules.map((module, moduleIndex) => (
             <Card key={module._id}>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -323,7 +323,7 @@ export default function CoursePage() {
           ))}
         </div>
 
-        <div>
+        <div className="w-full md:w-2/5">
           <Card>
             <CardHeader>
               <CardTitle>File Upload</CardTitle>
