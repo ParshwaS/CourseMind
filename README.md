@@ -37,7 +37,7 @@ cd CourseMind
 
 ### Database & Backend
 - [X] **Create database schema - backend (structuring)**
-- [ ] **CRUD for courses - backend API**
+- [X] **CRUD for courses - backend API**
 - [ ] **CRUD for quizzes - backend API**
 - [ ] **CRUD for assignments - backend API**
 - [ ] **CRUD for materials for courses - backend API**
@@ -45,13 +45,13 @@ cd CourseMind
 ### UI (Frontend)
 - [X] **Dashboard with list of courses - UI**
 - [X] **Inner page for list of assignments and quizzes for each course - UI**
-- [ ] **Create a new course - UI**
+- [X] **Create a new course - UI**
 - [ ] **Create new quizzes - UI**
 - [ ] **Create new assignment - UI**
 - [ ] **Add new materials for course - UI**
 
 ### Integration Tasks
-- [ ] **Integration of Courses CRUD UI & API**
+- [X] **Integration of Courses CRUD UI & API**
 - [ ] **Integration of Quizzes CRUD UI & API**
 - [ ] **Integration of Assignments CRUD UI & API**
 
